@@ -82,6 +82,13 @@ class Constraints(BaseModel):
     max_range_m: float = 5000.0
 
 
+class ContingencyRung(BaseModel):
+    priority: int = 1
+    trigger: str  # e.g. "link_loss_5s", "geofence_breach"
+    action: str   # e.g. "hold_position", "return_to_launch", "land_in_place"
+    description: str = ""
+
+
 class MIG(BaseModel):
     version: str = "1.0"
     mission_id: str
@@ -90,6 +97,7 @@ class MIG(BaseModel):
     vehicles: list[Vehicle] = Field(default_factory=list)
     waypoints: list[Waypoint] = Field(default_factory=list)
     constraints: Constraints = Field(default_factory=Constraints)
+    contingency_ladder: list[ContingencyRung] = Field(default_factory=list)
     status: MissionStatus = MissionStatus.planning
     validation_errors: list[str] = Field(default_factory=list)
 

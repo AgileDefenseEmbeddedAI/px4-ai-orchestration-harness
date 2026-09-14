@@ -16,7 +16,7 @@ import os
 
 import openai
 
-from harness.api.models import Constraints, MIG, Vehicle, VehicleType, Waypoint
+from harness.api.models import Constraints, ContingencyRung, MIG, Vehicle, VehicleType, Waypoint
 from harness.planner.mig import build_mig, new_mission_id
 
 logger = logging.getLogger(__name__)
@@ -93,14 +93,19 @@ async def decompose_intent(text: str, config: dict) -> MIG:
     waypoints = [Waypoint(**w) for w in plan.get("waypoints", [])]
     raw_constraints = plan.get("constraints", {})
     constraints = Constraints(**raw_constraints)
+    contingency_ladder = [
+        ContingencyRung(**r) for r in plan.get("contingency_ladder", _default_contingency_ladder())
+    ]
 
-    return build_mig(
+    mig = build_mig(
         intent=text,
         mission_id=mission_id,
         vehicles=vehicles,
         waypoints=waypoints,
         constraints=constraints,
     )
+    mig.contingency_ladder = contingency_ladder
+    return mig
 
 
 # ---------------------------------------------------------------------------
@@ -114,6 +119,15 @@ def _make_client(config: dict) -> openai.AsyncOpenAI:
     )
     base_url = config.get("base_url") or None
     return openai.AsyncOpenAI(api_key=api_key, base_url=base_url)
+
+
+def _default_contingency_ladder() -> list[dict]:
+    return [
+        {"priority": 1, "trigger": "link_loss_5s", "action": "hold_position", "description": "Hold position if comms lost for 5 seconds"},
+        {"priority": 2, "trigger": "link_loss_30s", "action": "return_to_launch", "description": "RTL if comms lost for 30 seconds"},
+        {"priority": 3, "trigger": "link_loss_60s", "action": "land_in_place", "description": "Land immediately if comms lost for 60 seconds"},
+        {"priority": 4, "trigger": "geofence_breach", "action": "return_to_launch", "description": "RTL immediately on geofence breach"},
+    ]
 
 
 def _stub_plan(text: str) -> dict:
