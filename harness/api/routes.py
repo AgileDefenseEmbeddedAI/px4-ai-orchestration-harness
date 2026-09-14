@@ -2,11 +2,12 @@
 FastAPI API router.
 
 Endpoints:
-  POST /intent              — submit natural-language mission intent
-  GET  /plan/{mission_id}   — retrieve current plan/status
-  POST /authorize/{mission_id} — human authorization gate
-  GET  /missions            — list all missions (summary)
-  GET  /audit/{mission_id}  — retrieve audit log entries
+  POST /intent                  — submit natural-language mission intent
+  GET  /plan/{mission_id}       — retrieve current plan/status
+  POST /authorize/{mission_id}  — human authorization gate
+  GET  /missions                — list all missions (summary)
+  GET  /missions/{id}/audit     — retrieve structured audit log for a mission
+  GET  /audit/{mission_id}      — alias for /missions/{id}/audit (backwards compat)
 """
 
 import logging
@@ -21,6 +22,7 @@ from harness.api.models import (
     MissionStatus,
 )
 from harness.audit import logger as audit_module
+from harness.audit.logger import VALIDATOR_VERSION
 from harness.planner import decomposer
 from harness.planner.mig import new_mission_id
 from harness.validator import constraint_checker
@@ -43,8 +45,6 @@ async def _plan_mission(
 ) -> None:
     """Decompose intent → validate → update mission state."""
     try:
-        audit_module.log_event(mission_id, "planning_started", {"intent": text})
-
         mig = await decomposer.decompose_intent(text, config)
         # Ensure the MIG uses the mission_id we generated (stub plan makes its own)
         mig.mission_id = mission_id
@@ -58,15 +58,31 @@ async def _plan_mission(
             },
         )
 
+        # Store full MIG artifact so replay can reconstruct it
+        audit_module.log_event(
+            mission_id,
+            "plan_generated",
+            {"mig": mig.model_dump(mode="json"), "validator_version": VALIDATOR_VERSION},
+        )
+
         is_valid, errors = constraint_checker.validate(mig, constraints_config)
+
+        audit_module.log_event(
+            mission_id,
+            "verdict_issued",
+            {
+                "is_valid": is_valid,
+                "errors": errors,
+                "validator_version": VALIDATOR_VERSION,
+                "constraints_used": constraints_config,
+            },
+        )
 
         if is_valid:
             mig.status = MissionStatus.pending_authorization
-            audit_module.log_event(mission_id, "validation_passed", {})
         else:
             mig.status = MissionStatus.validation_failed
             mig.validation_errors = errors
-            audit_module.log_event(mission_id, "validation_failed", {"errors": errors})
 
         missions[mission_id].mig = mig
         missions[mission_id].status = mig.status
@@ -114,8 +130,13 @@ async def _dispatch_mission(
             ros2_result = await ros2_dispatch(val)
             audit_module.log_event(
                 mission_id,
-                "ros2_dispatch",
-                {"vehicle_id": vehicle.id, "result": ros2_result},
+                "dispatch_command",
+                {
+                    "vehicle_id": vehicle.id,
+                    "transport": "ros2",
+                    "action_count": len(val.actions),
+                    "result": ros2_result,
+                },
             )
 
             # Secondary: MAVLink 2 transport
@@ -124,8 +145,13 @@ async def _dispatch_mission(
             mavlink_result = await mavlink_dispatch(val, connection)
             audit_module.log_event(
                 mission_id,
-                "mavlink_dispatch",
-                {"vehicle_id": vehicle.id, "result": mavlink_result},
+                "dispatch_command",
+                {
+                    "vehicle_id": vehicle.id,
+                    "transport": "mavlink2",
+                    "action_count": len(val.actions),
+                    "result": mavlink_result,
+                },
             )
 
         missions[mission_id].status = MissionStatus.dispatched
@@ -164,6 +190,8 @@ async def post_intent(
         status=MissionStatus.planning,
         validation_errors=[],
     )
+
+    audit_module.log_event(mission_id, "intent_received", {"intent": body.text})
 
     background_tasks.add_task(
         _plan_mission,
@@ -224,7 +252,9 @@ async def authorize_mission(
     if not body.authorized:
         mission.status = MissionStatus.failed
         audit_module.log_event(
-            mission_id, "authorization_rejected", {"operator": body.operator}
+            mission_id,
+            "authorization_recorded",
+            {"operator": body.operator, "decision": "rejected"},
         )
         return mission
 
@@ -235,8 +265,8 @@ async def authorize_mission(
 
     audit_module.log_event(
         mission_id,
-        "authorization_granted",
-        {"operator": body.operator, "authorized_at": now.isoformat()},
+        "authorization_recorded",
+        {"operator": body.operator, "decision": "granted", "authorized_at": now.isoformat()},
     )
 
     background_tasks.add_task(
@@ -264,9 +294,18 @@ async def list_missions(request: Request):
     ]
 
 
-@router.get("/audit/{mission_id}", summary="Get mission audit log")
+@router.get("/missions/{mission_id}/audit", summary="Get structured mission audit log")
+async def get_mission_audit(mission_id: str):
+    """Return the full structured audit log for a mission as JSON."""
+    from harness.audit.logger import read_log
+
+    entries = read_log(mission_id)
+    return entries
+
+
+@router.get("/audit/{mission_id}", summary="Get mission audit log (alias)")
 async def get_audit(mission_id: str):
-    """Return all audit log entries for a mission."""
+    """Alias for /missions/{id}/audit — backwards compatibility."""
     from harness.audit.logger import read_log
 
     entries = read_log(mission_id)
