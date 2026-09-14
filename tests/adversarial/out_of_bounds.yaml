@@ -1,0 +1,25 @@
+name: "Out of Bounds Mission"
+description: "Mission with waypoints far outside the geofence — must be rejected"
+mig:
+  version: "1.0"
+  mission_id: "MSN-ADV001"
+  intent: "Fly to New York City"
+  vehicles:
+    - id: UAV-1
+      vehicle_type: multirotor
+      sitl_target: gz_x500
+      mavlink_sysid: 1
+      waypoints: ["WP-1"]
+  waypoints:
+    - id: WP-1
+      lat: 40.7128
+      lon: -74.0060
+      alt_m: 50.0
+      role: survey
+  constraints:
+    max_alt_m: 120.0
+    min_alt_m: 5.0
+    require_rtl: false
+    max_range_m: 5000.0
+expected_valid: false
+expected_error_contains: "geofence"

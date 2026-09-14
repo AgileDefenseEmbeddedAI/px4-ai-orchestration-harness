@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agiledefense.example/schemas/val/1.0",
+  "title": "Vehicle Action List (VAL) v1.0",
+  "description": "Per-vehicle ordered action sequence sent to the ROS 2 / MAVLink 2 dispatch transports. Produced from the MIG by the dispatcher — never written directly by the LLM.",
+  "type": "object",
+  "required": ["version", "mission_id", "vehicle_id", "vehicle_type", "actions"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "mission_id": {
+      "type": "string",
+      "description": "Parent MIG mission ID"
+    },
+    "vehicle_id": {
+      "type": "string",
+      "description": "Vehicle this VAL targets (e.g. UAV-1, GND-1)"
+    },
+    "vehicle_type": {
+      "type": "string",
+      "enum": ["multirotor", "rover"]
+    },
+    "actions": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/VehicleAction" },
+      "description": "Ordered list of actions for the vehicle to execute"
+    }
+  },
+  "definitions": {
+    "VehicleAction": {
+      "type": "object",
+      "required": ["action_type"],
+      "additionalProperties": false,
+      "properties": {
+        "action_type": {
+          "type": "string",
+          "description": "Action type: goto_waypoint | loiter | rtl | land | arm | disarm | etc."
+        },
+        "waypoint": {
+          "type": ["object", "null"],
+          "description": "Target waypoint coordinates",
+          "properties": {
+            "lat": { "type": "number" },
+            "lon": { "type": "number" },
+            "alt_m": { "type": "number" },
+            "role": { "type": "string" }
+          }
+        },
+        "parameters": {
+          "type": ["object", "null"],
+          "description": "Action-specific parameters (e.g. speed_mps, loiter_radius_m)"
+        }
+      }
+    }
+  }
+}

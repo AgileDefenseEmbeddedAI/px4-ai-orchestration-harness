@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Missions{% endblock %}
+
+{% block content %}
+<div class="section-head">
+  <div class="section-eye">Mission Control</div>
+  <h1 class="section-title"><strong>Active</strong> Missions</h1>
+</div>
+
+<div style="margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
+  <p style="color: rgba(255,255,255,0.65); font-size: 14px;">
+    {{ missions | length }} mission(s) in memory this session.
+  </p>
+  <div style="display: flex; gap: 12px; align-items: center;">
+    <a href="/docs" class="btn btn-outline">API Docs</a>
+  </div>
+</div>
+
+{% if missions %}
+<div class="card" style="padding: 0;">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Mission ID</th>
+        <th>Status</th>
+        <th>Intent</th>
+        <th>Vehicles</th>
+        <th>Authorized By</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for mission in missions %}
+      <tr>
+        <td><span class="mono">{{ mission.mission_id }}</span></td>
+        <td>
+          {% set s = mission.status %}
+          {% if s == 'planning' %}<span class="badge badge-planning">Planning</span>
+          {% elif s == 'validation_failed' %}<span class="badge badge-failed">Validation Failed</span>
+          {% elif s == 'pending_authorization' %}<span class="badge badge-pending">Pending Auth</span>
+          {% elif s == 'authorized' %}<span class="badge badge-authorized">Authorized</span>
+          {% elif s == 'dispatching' %}<span class="badge badge-authorized">Dispatching</span>
+          {% elif s == 'dispatched' %}<span class="badge badge-dispatched">Dispatched</span>
+          {% elif s == 'failed' %}<span class="badge badge-failed">Failed</span>
+          {% else %}<span class="badge">{{ s }}</span>{% endif %}
+        </td>
+        <td style="max-width: 360px; font-size: 13px; color: rgba(255,255,255,0.8);">
+          {{ (mission.mig.intent if mission.mig else '—') | truncate(80) }}
+        </td>
+        <td style="font-size: 13px;">
+          {% if mission.mig %}
+            {{ mission.mig.vehicles | length }}
+          {% else %}—{% endif %}
+        </td>
+        <td style="font-size: 13px; color: rgba(255,255,255,0.65);">
+          {{ mission.authorized_by or '—' }}
+        </td>
+        <td>
+          {% if mission.status == 'pending_authorization' %}
+          <a href="/ui/authorize/{{ mission.mission_id }}" class="btn btn-red" style="font-size: 11px; height: 30px; padding: 0 12px;">Authorize</a>
+          {% else %}
+          <a href="/audit/{{ mission.mission_id }}" class="btn btn-outline" style="font-size: 11px; height: 30px; padding: 0 12px;" target="_blank">Audit Log</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="card" style="text-align: center; padding: 64px 24px;">
+  <p style="color: rgba(255,255,255,0.65); font-size: 15px; margin-bottom: 16px;">
+    No missions in this session.
+  </p>
+  <p style="color: rgba(255,255,255,0.4); font-size: 13px;">
+    Submit a mission intent via <code style="font-family: monospace; color: #a9d8fb;">POST /intent</code> to create one.
+  </p>
+</div>
+{% endif %}
+
+<div style="margin-top: 32px;">
+  <h2 style="font-size: 18px; font-weight: 500; margin-bottom: 16px;">Submit a New Mission</h2>
+  <div class="card">
+    <form id="intent-form">
+      <div class="field">
+        <label for="intent-text">Mission Intent (natural language)</label>
+        <textarea id="intent-text" name="text"
+          style="width:100%; min-height: 80px; background: var(--navy-d); border: 1px solid var(--border); color: var(--white); font-family: var(--font); font-size: 14px; padding: 10px 12px; outline: none; resize: vertical;"
+          placeholder="Scout grid Alpha-7 with the UAV at 60m, then deploy the rover to secure the perimeter..."></textarea>
+      </div>
+      <button type="submit" class="btn btn-red">Analyze Intent</button>
+      <span id="form-status" style="margin-left: 12px; font-size: 13px; color: rgba(255,255,255,0.65);"></span>
+    </form>
+  </div>
+</div>
+
+<script>
+document.getElementById('intent-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const text = document.getElementById('intent-text').value.trim();
+  const status = document.getElementById('form-status');
+  if (!text || text.length < 10) { status.textContent = 'Intent too short.'; return; }
+
+  status.textContent = 'Submitting...';
+  try {
+    const resp = await fetch('/intent', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({text})
+    });
+    const data = await resp.json();
+    if (resp.ok) {
+      status.textContent = `Mission ${data.mission_id} created. Refreshing...`;
+      setTimeout(() => location.reload(), 2000);
+    } else {
+      status.textContent = `Error: ${JSON.stringify(data.detail || data)}`;
+    }
+  } catch(err) {
+    status.textContent = `Request failed: ${err.message}`;
+  }
+});
+</script>
+{% endblock %}

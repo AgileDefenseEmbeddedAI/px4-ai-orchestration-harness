@@ -1,21 +1,32 @@
-# Dependencies
-node_modules/
+# Python
+__pycache__/
+*.py[cod]
+*.so
 .venv/
 venv/
-__pycache__/
-*.pyc
-
-# Build output
+env/
+.env
+*.egg-info/
 dist/
 build/
-*.egg-info/
 
-# Environment / secrets
-.env
-.env.*
-!.env.sample
+# Config (contains credentials)
+config/model.yaml
 
-# OS / editor
-.DS_Store
-.idea/
+# Runtime
+missions/*.jsonl
+*.log
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
 .vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

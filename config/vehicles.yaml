@@ -1,0 +1,23 @@
+# Fleet definition
+# Each entry maps a logical vehicle ID to its SITL target and MAVLink/ROS 2 addresses.
+#
+# vehicle_type: multirotor | rover
+# sitl_target:  PX4 SITL make target (e.g. gz_x500, gz_rover_ackermann)
+# mavlink_sysid: MAVLink system ID — must be unique per vehicle
+# mavlink_connection: pymavlink connection string for this vehicle's SITL instance
+# ros2_namespace: ROS 2 namespace for px4_ros_com topics
+
+fleet:
+  - id: UAV-1
+    vehicle_type: multirotor
+    sitl_target: gz_x500
+    mavlink_sysid: 1
+    mavlink_connection: "udp:127.0.0.1:14540"
+    ros2_namespace: /px4_1
+
+  - id: GND-1
+    vehicle_type: rover
+    sitl_target: gz_rover_ackermann
+    mavlink_sysid: 2
+    mavlink_connection: "udp:127.0.0.1:14541"
+    ros2_namespace: /px4_2

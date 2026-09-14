@@ -1,0 +1,18 @@
+# LLM provider configuration
+# Copy to config/model.yaml and fill in your credentials
+#
+# The harness reads this file on startup; all LLM calls go through
+# harness/planner/decomposer.py — no provider strings appear elsewhere.
+
+provider: openai        # openai | ollama | azure
+
+# null = use the provider's default endpoint
+# Ollama example: http://localhost:11434/v1
+base_url: null
+
+# Model name / deployment name
+model: gpt-4o-mini
+
+# Name of the environment variable that holds the API key.
+# For Ollama / air-gapped inference: set to any env var with value "ollama"
+api_key_env: OPENAI_API_KEY

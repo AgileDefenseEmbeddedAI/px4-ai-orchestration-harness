@@ -1,0 +1,16 @@
+name: "ISR Sweep"
+description: >
+  Intelligence, Surveillance, and Reconnaissance sweep of a designated sector
+  using a multirotor. No rover required. Single-vehicle mission.
+
+intent: >
+  Perform an ISR sweep of the eastern sector at 80m altitude with the UAV.
+  Cover a 500m x 500m grid pattern. Return to launch after sweep is complete.
+
+expected:
+  vehicle_types:
+    - multirotor
+  min_waypoints: 3
+  require_rtl: true
+  max_alt_m: 120.0
+  must_pass_validation: true

@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PX4 AI Orchestration Harness — Agile Defense</title>
+<style>
+/* =========================================================================
+   AGILE DEFENSE DESIGN SYSTEM — PX4 AI Orchestration Harness
+   Tokens from: .claude/skills/agile-defense-design/colors_and_type.css
+   ========================================================================= */
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --color-red-primary:    #d23c3a;
+  --color-red-dark:       #c24841;
+  --color-navy-deepest:   #061033;
+  --color-navy-deep:      #0b2451;
+  --color-navy-mid:       #1f3864;
+  --color-blue-primary:   #4386c3;
+  --color-blue-light:     #a9d8fb;
+  --color-blue-vivid:     #0092ff;
+  --color-orange:         #efb16a;
+  --color-white:          #ffffff;
+  --color-black:          #000000;
+
+  --bg-page:              var(--color-navy-deepest);
+  --bg-card:              var(--color-navy-deep);
+  --bg-nav:               var(--color-black);
+  --fg-primary:           var(--color-white);
+  --fg-muted:             rgba(255,255,255,0.65);
+  --fg-accent:            var(--color-red-primary);
+  --border-subtle:        rgba(255,255,255,0.1);
+
+  --font-primary:         'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  --text-hero:            80px;
+  --text-display:         64px;
+  --text-h1:              48px;
+  --text-h2:              32px;
+  --text-h3:              24px;
+  --text-h4:              20px;
+  --text-body:            16px;
+  --text-nav:             13px;
+  --text-small:           12px;
+
+  --weight-regular:       400;
+  --weight-medium:        500;
+  --weight-bold:          700;
+
+  --lh-tight:             1.2;
+  --lh-normal:            1.4;
+  --lh-relaxed:           1.65;
+
+  --space-xs:             8px;
+  --space-sm:             16px;
+  --space-md:             24px;
+  --space-lg:             32px;
+  --space-xl:             48px;
+  --space-2xl:            64px;
+  --space-3xl:            96px;
+  --space-4xl:            120px;
+
+  --content-max:          1200px;
+  --nav-height:           56px;
+  --button-height:        44px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-primary);
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+  line-height: var(--lh-normal);
+  color: var(--fg-primary);
+  background-color: var(--bg-page);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* =========================================================================
+   NAVIGATION
+   ========================================================================= */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: var(--nav-height);
+  background: var(--bg-nav);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-lg);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.navbar-logo svg {
+  height: 32px;
+  width: auto;
+}
+
+.navbar-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border-subtle);
+}
+
+.navbar-product {
+  font-size: var(--text-nav);
+  font-weight: var(--weight-medium);
+  color: var(--fg-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  list-style: none;
+  height: var(--nav-height);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  height: var(--nav-height);
+  padding: 0 var(--space-sm);
+  font-size: var(--text-nav);
+  font-weight: var(--weight-medium);
+  color: var(--fg-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.nav-item:hover { color: var(--fg-primary); }
+
+.nav-item-cta {
+  background: var(--color-red-dark);
+  color: var(--fg-primary);
+  padding: 0 20px;
+  margin-left: var(--space-sm);
+  letter-spacing: 0.06em;
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  font-size: var(--text-nav);
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+}
+
+.nav-item-cta:hover { background: var(--color-red-primary); }
+
+/* =========================================================================
+   HERO
+   ========================================================================= */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  background: var(--bg-page);
+  padding: calc(var(--nav-height) + var(--space-4xl)) var(--space-lg) var(--space-4xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  right: -100px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(11,36,81,0.6) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-grid-lines {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+.hero-content {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3xl);
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-left {}
+
+.hero-eyebrow {
+  font-size: var(--text-nav);
+  font-weight: var(--weight-medium);
+  color: var(--color-red-primary);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-md);
+}
+
+.hero-heading {
+  font-size: var(--text-hero);
+  font-weight: var(--weight-bold);
+  line-height: var(--lh-tight);
+  color: var(--fg-primary);
+  margin-bottom: var(--space-md);
+}
+
+.hero-heading span {
+  color: var(--color-red-primary);
+  font-weight: var(--weight-regular);
+}
+
+.hero-body {
+  font-size: var(--text-h4);
+  font-weight: var(--weight-regular);
+  line-height: var(--lh-relaxed);
+  color: var(--fg-muted);
+  max-width: 480px;
+  margin-bottom: var(--space-xl);
+}
+
+.btn-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  height: var(--button-height);
+  padding: 0 24px;
+  font-family: var(--font-primary);
+  font-size: var(--text-nav);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.btn:hover { opacity: 0.85; }
+
+.btn-primary {
+  background: var(--color-red-primary);
+  color: var(--fg-primary);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--fg-primary);
+  border: 1px solid var(--border-subtle);
+}
+
+/* Hero right: demo terminal */
+.hero-terminal {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  font-family: 'Courier New', monospace;
+}
+
+.terminal-bar {
+  background: var(--color-navy-mid);
+  padding: 10px var(--space-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.terminal-dot {
+  width: 10px;
+  height: 10px;
+  background: var(--border-subtle);
+}
+
+.terminal-title {
+  font-family: var(--font-primary);
+  font-size: var(--text-small);
+  color: var(--fg-muted);
+  margin-left: var(--space-xs);
+  letter-spacing: 0.04em;
+}
+
+.terminal-body {
+  padding: var(--space-md);
+  font-size: 13px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.8);
+  min-height: 320px;
+}
+
+.term-prompt { color: var(--color-red-primary); }
+.term-cmd { color: var(--fg-primary); }
+.term-comment { color: var(--fg-muted); }
+.term-key { color: var(--color-blue-light); }
+.term-val { color: var(--color-orange); }
+.term-ok { color: #4caf50; }
+.term-warn { color: var(--color-orange); }
+
+/* =========================================================================
+   STATS BANNER
+   ========================================================================= */
+.stats-banner {
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: var(--space-xl) var(--space-lg);
+}
+
+.stats-inner {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border-subtle);
+}
+
+.stat-item {
+  background: var(--bg-card);
+  padding: var(--space-lg) var(--space-xl);
+}
+
+.stat-value {
+  font-size: 48px;
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-tight);
+  margin-bottom: var(--space-xs);
+}
+
+.stat-label {
+  font-size: var(--text-small);
+  font-weight: var(--weight-medium);
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.stat-value.red    { color: var(--color-red-primary); }
+.stat-value.blue   { color: var(--color-blue-light); }
+.stat-value.orange { color: var(--color-orange); }
+.stat-value.vivid  { color: var(--color-blue-vivid); }
+
+/* =========================================================================
+   SECTIONS
+   ========================================================================= */
+.section {
+  padding: var(--space-3xl) var(--space-lg);
+}
+
+.section-inner {
+  max-width: var(--content-max);
+  margin: 0 auto;
+}
+
+.section-header {
+  margin-bottom: var(--space-2xl);
+}
+
+.section-eyebrow {
+  font-size: var(--text-nav);
+  font-weight: var(--weight-medium);
+  color: var(--color-red-primary);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-sm);
+}
+
+.section-heading {
+  font-size: var(--text-display);
+  font-weight: var(--weight-bold);
+  line-height: var(--lh-tight);
+  color: var(--fg-primary);
+  margin-bottom: var(--space-md);
+}
+
+.section-heading span {
+  font-weight: var(--weight-regular);
+  color: var(--fg-muted);
+}
+
+.section-body {
+  font-size: var(--text-body);
+  line-height: var(--lh-relaxed);
+  color: var(--fg-muted);
+  max-width: 560px;
+}
+
+/* =========================================================================
+   HOW IT WORKS — 4-step pipeline
+   ========================================================================= */
+.pipeline {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border-subtle);
+  margin-top: var(--space-2xl);
+}
+
+.pipeline-step {
+  background: var(--bg-card);
+  padding: var(--space-xl) var(--space-lg);
+  position: relative;
+}
+
+.pipeline-step::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 8px solid var(--border-subtle);
+  z-index: 1;
+}
+
+.pipeline-step:last-child::after { display: none; }
+
+.step-number {
+  font-size: var(--text-nav);
+  font-weight: var(--weight-medium);
+  color: var(--color-red-primary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-sm);
+}
+
+.step-icon {
+  width: 40px;
+  height: 40px;
+  margin-bottom: var(--space-md);
+  color: var(--fg-primary);
+}
+
+.step-title {
+  font-size: var(--text-h3);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-tight);
+  color: var(--fg-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.step-desc {
+  font-size: var(--text-body);
+  line-height: var(--lh-relaxed);
+  color: var(--fg-muted);
+}
+
+.step-badge {
+  display: inline-block;
+  margin-top: var(--space-md);
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--border-subtle);
+  color: var(--fg-muted);
+}
+
+.step-badge.red {
+  border-color: var(--color-red-primary);
+  color: var(--color-red-primary);
+}
+
+/* =========================================================================
+   INTERACTIVE DEMO
+   ========================================================================= */
+.demo-section {
+  background: var(--color-navy-mid);
+  padding: var(--space-3xl) var(--space-lg);
+}
+
+.demo-inner {
+  max-width: var(--content-max);
+  margin: 0 auto;
+}
+
+.demo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  margin-top: var(--space-2xl);
+}
+
+.demo-panel {
+  background: var(--bg-page);
+  border: 1px solid var(--border-subtle);
+}
+
+.demo-panel-header {
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.demo-panel-title {
+  font-size: var(--text-nav);
+  font-weight: var(--weight-medium);
+  color: var(--fg-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.demo-panel-body {
+  padding: var(--space-md);
+}
+
+.intent-input-wrap {
+  position: relative;
+}
+
+.intent-textarea {
+  width: 100%;
+  min-height: 120px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--fg-primary);
+  font-family: var(--font-primary);
+  font-size: var(--text-body);
+  line-height: var(--lh-relaxed);
+  padding: var(--space-sm);
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.intent-textarea:focus {
+  border-color: rgba(255,255,255,0.3);
+}
+
+.intent-textarea::placeholder {
+  color: var(--fg-muted);
+}
+
+.demo-btn-row {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.sample-intents {
+  margin-top: var(--space-sm);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.sample-chip {
+  font-size: 11px;
+  padding: 4px 10px;
+  border: 1px solid var(--border-subtle);
+  color: var(--fg-muted);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  font-family: var(--font-primary);
+  background: transparent;
+}
+
+.sample-chip:hover {
+  border-color: rgba(255,255,255,0.3);
+  color: var(--fg-primary);
+}
+
+/* Plan output */
+.plan-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--fg-muted);
+}
+
+.status-dot.active { background: var(--color-blue-vivid); animation: pulse 1.2s infinite; }
+.status-dot.valid  { background: #4caf50; }
+.status-dot.error  { background: var(--color-red-primary); }
+.status-dot.authorized { background: var(--color-orange); }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.status-label {
+  font-size: var(--text-small);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.plan-empty {
+  color: var(--fg-muted);
+  font-size: var(--text-body);
+  line-height: var(--lh-relaxed);
+  padding: var(--space-lg) 0;
+  text-align: center;
+}
+
+.plan-block {
+  display: none;
+}
+
+.plan-block.visible { display: block; }
+
+.plan-field {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: var(--text-body);
+}
+
+.plan-field:last-child { border-bottom: none; }
+
+.plan-field-key {
+  font-weight: var(--weight-medium);
+  color: var(--color-blue-light);
+  min-width: 140px;
+  font-size: 13px;
+}
+
+.plan-field-val {
+  color: var(--fg-primary);
+  font-size: 13px;
+  flex: 1;
+}
+
+.plan-vehicle-list {
+  margin-top: var(--space-sm);
+}
+
+.vehicle-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) 0;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.vehicle-row:last-child { border-bottom: none; }
+
+.vehicle-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-blue-light);
+  flex-shrink: 0;
+}
+
+.vehicle-id { font-weight: var(--weight-medium); min-width: 60px; }
+.vehicle-type { color: var(--fg-muted); min-width: 100px; }
+.vehicle-wps { color: var(--fg-muted); }
+
+.validation-result {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  background: var(--bg-card);
+  margin-top: var(--space-md);
+}
+
+.validation-result.pass { border-left: 3px solid #4caf50; }
+.validation-result.fail { border-left: 3px solid var(--color-red-primary); }
+
+.validation-icon { font-size: 18px; }
+.validation-text { font-size: 13px; }
+
+.auth-panel {
+  margin-top: var(--space-md);
+  display: none;
+}
+
+.auth-panel.visible { display: block; }
+
+.auth-field {
+  margin-bottom: var(--space-sm);
+}
+
+.auth-label {
+  font-size: 11px;
+  font-weight: var(--weight-medium);
+  color: var(--fg-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.auth-input {
+  width: 100%;
+  height: 36px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--fg-primary);
+  font-family: var(--font-primary);
+  font-size: var(--text-body);
+  padding: 0 var(--space-sm);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.auth-input:focus { border-color: rgba(255,255,255,0.3); }
+
+.dispatched-banner {
+  display: none;
+  background: var(--color-navy-mid);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.dispatched-banner.visible { display: block; }
+
+.dispatched-header {
+  font-size: var(--text-nav);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-orange);
+  margin-bottom: var(--space-sm);
+}
+
+.dispatch-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 13px;
+  padding: 4px 0;
+  color: var(--fg-muted);
+}
+
+.dispatch-check {
+  color: #4caf50;
+  font-size: 14px;
+}
+
+/* =========================================================================
+   ARCHITECTURE SECTION
+   ========================================================================= */
+.arch-section {
+  background: var(--bg-page);
+}
+
+.arch-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  margin-top: var(--space-2xl);
+}
+
+.arch-card {
+  background: var(--bg-card);
+  padding: var(--space-xl);
+  border-top: 2px solid var(--border-subtle);
+}
+
+.arch-card.accent { border-top-color: var(--color-red-primary); }
+.arch-card.blue   { border-top-color: var(--color-blue-light); }
+.arch-card.orange { border-top-color: var(--color-orange); }
+.arch-card.vivid  { border-top-color: var(--color-blue-vivid); }
+
+.arch-card-icon {
+  width: 40px;
+  height: 40px;
+  margin-bottom: var(--space-md);
+}
+
+.arch-card-title {
+  font-size: var(--text-h3);
+  font-weight: var(--weight-medium);
+  color: var(--fg-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.arch-card-body {
+  font-size: var(--text-body);
+  line-height: var(--lh-relaxed);
+  color: var(--fg-muted);
+  margin-bottom: var(--space-md);
+}
+
+.arch-module-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.arch-module-list li {
+  font-size: 13px;
+  color: var(--fg-muted);
+  padding-left: var(--space-sm);
+  border-left: 2px solid var(--border-subtle);
+}
+
+.arch-module-list li code {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--color-blue-light);
+}
+
+/* =========================================================================
+   API REFERENCE
+   ========================================================================= */
+.api-section {
+  background: var(--color-navy-mid);
+  padding: var(--space-3xl) var(--space-lg);
+}
+
+.api-table-wrap {
+  margin-top: var(--space-2xl);
+  overflow-x: auto;
+}
+
+.api-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.api-table th {
+  text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  font-size: 11px;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-page);
+}
+
+.api-table td {
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: top;
+  line-height: var(--lh-normal);
+}
+
+.api-table tr:last-child td { border-bottom: none; }
+
+.method-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.04em;
+  font-family: 'Courier New', monospace;
+}
+
+.method-post { background: var(--color-red-primary); color: #fff; }
+.method-get  { background: var(--color-blue-primary); color: #fff; }
+
+.api-path {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: var(--color-blue-light);
+}
+
+.api-desc { color: var(--fg-muted); font-size: 13px; }
+
+/* =========================================================================
+   CONSTRAINTS SECTION
+   ========================================================================= */
+.constraints-section {
+  background: var(--bg-page);
+  padding: var(--space-3xl) var(--space-lg);
+}
+
+.constraints-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border-subtle);
+  margin-top: var(--space-2xl);
+}
+
+.constraint-card {
+  background: var(--bg-card);
+  padding: var(--space-lg);
+}
+
+.constraint-icon {
+  margin-bottom: var(--space-sm);
+}
+
+.constraint-label {
+  font-size: var(--text-small);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 6px;
+}
+
+.constraint-title {
+  font-size: var(--text-h4);
+  font-weight: var(--weight-medium);
+  color: var(--fg-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.constraint-body {
+  font-size: 13px;
+  line-height: var(--lh-relaxed);
+  color: var(--fg-muted);
+}
+
+/* =========================================================================
+   FOOTER
+   ========================================================================= */
+.footer {
+  background: var(--bg-nav);
+  border-top: 1px solid var(--border-subtle);
+  padding: var(--space-2xl) var(--space-lg);
+}
+
+.footer-inner {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-2xl);
+  margin-bottom: var(--space-2xl);
+}
+
+.footer-brand {}
+
+.footer-logo svg { height: 28px; width: auto; margin-bottom: var(--space-sm); }
+
+.footer-tagline {
+  font-size: var(--text-small);
+  color: var(--fg-muted);
+  line-height: var(--lh-relaxed);
+  max-width: 240px;
+}
+
+.footer-col-title {
+  font-size: 11px;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.footer-links a {
+  font-size: 13px;
+  color: var(--fg-muted);
+  transition: color 0.15s;
+}
+
+.footer-links a:hover { color: var(--fg-primary); }
+
+.footer-bottom {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-copy {
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+.footer-legal {
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+/* =========================================================================
+   UTILITY
+   ========================================================================= */
+.text-red { color: var(--color-red-primary); }
+.text-muted { color: var(--fg-muted); }
+.mono { font-family: 'Courier New', monospace; }
+
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav class="navbar">
+  <div class="navbar-brand">
+    <div class="navbar-logo">
+      <svg width="116" height="48" viewBox="0 0 227 94" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#clip0_nav)">
+          <path d="M1.70494 65.5383H38.867C40.0207 65.5383 40.8397 64.4077 40.4894 63.303L36.0135 49.1499C35.7869 48.4393 35.1327 47.957 34.391 47.957H6.19631C5.45462 47.957 4.80049 48.4393 4.57386 49.1499L0.0824779 63.303C-0.267767 64.4077 0.551188 65.5383 1.70494 65.5383Z" fill="#D23C3A"/>
+          <path d="M9.96641 39.5031H30.5176C31.6713 39.5031 32.4903 38.3725 32.14 37.2679L27.6641 23.1147C27.4375 22.4042 26.7833 21.9219 26.0416 21.9219H14.4578C13.7161 21.9219 13.062 22.4042 12.8353 23.1147L8.34395 37.2679C7.99371 38.3725 8.81266 39.5031 9.96641 39.5031Z" fill="#D23C3A"/>
+          <path d="M119.258 16.4038H129.194C130.137 16.4038 130.899 17.1714 130.899 18.1204V64.0132C130.899 64.9623 130.137 65.7298 129.194 65.7298H119.258C118.316 65.7298 117.553 64.9623 117.553 64.0132V18.1204C117.553 17.1714 118.316 16.4038 119.258 16.4038Z" fill="white"/>
+          <path d="M119.258 0H129.194C130.137 0 130.899 0.767559 130.899 1.71663V9.93159C130.899 10.8807 130.137 11.6482 129.194 11.6482H119.258C118.316 11.6482 117.553 10.8807 117.553 9.93159V1.71663C117.553 0.767559 118.316 0 119.258 0Z" fill="white"/>
+          <path d="M139.037 0H148.973C149.915 0 150.677 0.767559 150.677 1.71663V64.0134C150.677 64.9624 149.915 65.73 148.973 65.73H139.037C138.094 65.73 137.332 64.9624 137.332 64.0134V1.71663C137.332 0.767559 138.094 0 139.037 0Z" fill="white"/>
+          <path d="M79.15 16.4038C71.7794 16.4038 65.8098 22.4198 65.8098 29.8361V52.1005C65.8098 59.5219 71.7846 65.5327 79.15 65.5327H97.4761V71.0509C97.4761 72.197 96.549 73.1305 95.4107 73.1305H72.9074C71.9649 73.1305 71.2026 73.8981 71.2026 74.8472V84.8514C71.2026 85.8004 71.9649 86.568 72.9074 86.568H99.4591C105.733 86.568 110.816 81.4492 110.816 75.1324V18.1204C110.816 17.1714 110.054 16.4038 109.111 16.4038H79.15ZM80.8549 29.4938H97.4761V52.4479H80.8549C79.9123 52.4479 79.15 51.6804 79.15 50.7313V31.2104C79.15 30.2614 79.9123 29.4938 80.8549 29.4938Z" fill="white"/>
+          <path d="M171.182 16.4041C163.812 16.4041 157.842 22.4201 157.842 29.8364V52.1008C157.842 59.5222 163.817 65.5331 171.182 65.5331H198.852C199.794 65.5331 200.556 64.7655 200.556 63.8164V54.1597C200.556 53.2106 199.794 52.4431 198.852 52.4431H172.887C171.945 52.4431 171.182 51.6755 171.182 50.7264V47.0235H201.144C202.086 47.0235 202.849 46.2559 202.849 45.3068V29.8312C202.849 22.4097 196.874 16.3989 189.508 16.3989H171.182V16.4041ZM189.508 36.3399H171.182V30.5262C171.182 29.5771 171.945 28.8095 172.887 28.8095H187.803C188.746 28.8095 189.508 29.5771 189.508 30.5262V36.3399Z" fill="white"/>
+          <path d="M43.832 1.19283C43.6054 0.482317 42.9513 0 42.2096 0H21.4164C20.6747 0 20.0205 0.482317 19.7939 1.19283L16.6108 11.2281C16.2606 12.3328 17.0795 13.4634 18.2333 13.4634H31.5941C32.3358 13.4634 32.9899 13.9457 33.2165 14.6562L48.9364 64.3401C49.163 65.0506 49.8171 65.5329 50.5588 65.5329H61.916C63.0698 65.5329 63.8887 64.4023 63.5385 63.2977L43.832 1.19283Z" fill="white"/>
+        </g>
+        <defs><clipPath id="clip0_nav"><rect width="227" height="94" fill="white"/></clipPath></defs>
+      </svg>
+    </div>
+    <div class="navbar-divider"></div>
+    <span class="navbar-product">PX4 AI Harness</span>
+  </div>
+  <ul class="navbar-links">
+    <li><a href="#how-it-works" class="nav-item">How It Works</a></li>
+    <li><a href="#demo" class="nav-item">Demo</a></li>
+    <li><a href="#architecture" class="nav-item">Architecture</a></li>
+    <li><a href="#api" class="nav-item">API</a></li>
+    <li><a href="https://github.com/AgileDefenseEmbeddedAI/px4-ai-orchestration-harness" class="nav-item">GitHub</a></li>
+    <li><a href="#demo" class="nav-item nav-item-cta">Get Started</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-grid-lines"></div>
+  <div class="hero-content">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Agile Defense — Embedded AI</div>
+      <h1 class="hero-heading">
+        <strong>Autonomous</strong><br>
+        <span>Mission</span><br>
+        Orchestration
+      </h1>
+      <p class="hero-body">
+        Natural-language mission intent, decomposed into validated multi-vehicle plans,
+        enforced deterministically, authorized by a human, dispatched over ROS 2 and MAVLink 2
+        to heterogeneous PX4 autonomous platforms.
+      </p>
+      <div class="btn-group">
+        <a href="#demo" class="btn btn-primary">Run Demo</a>
+        <a href="https://github.com/AgileDefenseEmbeddedAI/px4-ai-orchestration-harness" class="btn btn-secondary">View Source</a>
+      </div>
+    </div>
+    <div class="hero-terminal">
+      <div class="terminal-bar">
+        <div class="terminal-dot"></div>
+        <div class="terminal-dot"></div>
+        <div class="terminal-dot"></div>
+        <span class="terminal-title">px4-harness — intent pipeline</span>
+      </div>
+      <div class="terminal-body">
+        <div><span class="term-prompt">$</span> <span class="term-cmd">curl -X POST /intent \</span></div>
+        <div>&nbsp;&nbsp;<span class="term-cmd">-d '{"text": "Scout Alpha-7, rover secures perimeter"}'</span></div>
+        <br>
+        <div><span class="term-key">{</span></div>
+        <div>&nbsp;&nbsp;<span class="term-key">"mission_id"</span>: <span class="term-val">"MSN-A7B3C9D2"</span>,</div>
+        <div>&nbsp;&nbsp;<span class="term-key">"status"</span>: <span class="term-val">"planning"</span></div>
+        <div><span class="term-key">}</span></div>
+        <br>
+        <div><span class="term-comment"># Planner decomposes intent via LLM</span></div>
+        <div><span class="term-comment"># Validator runs 7 deterministic checks</span></div>
+        <div><span class="term-ok">[VALID]</span> <span class="term-comment">2 vehicles, 9 waypoints, RTL confirmed</span></div>
+        <br>
+        <div><span class="term-comment"># Human authorization required</span></div>
+        <div><span class="term-prompt">$</span> <span class="term-cmd">curl -X POST /authorize/MSN-A7B3C9D2 \</span></div>
+        <div>&nbsp;&nbsp;<span class="term-cmd">-d '{"authorized": true, "operator": "Capt. Reynolds"}'</span></div>
+        <br>
+        <div><span class="term-ok">[DISPATCHED]</span> <span class="term-comment">UAV-1 (ROS 2) + GND-1 (MAVLink 2)</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BANNER -->
+<div class="stats-banner">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-value red">2</div>
+      <div class="stat-label">Vehicle Types</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value blue">7</div>
+      <div class="stat-label">Hard Constraint Checks</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value orange">100%</div>
+      <div class="stat-label">Human-Authorized Dispatch</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value vivid">2</div>
+      <div class="stat-label">Transport Paths</div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how-it-works">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-eyebrow">Mission Pipeline</div>
+      <h2 class="section-heading"><strong>How It</strong> <span>Works</span></h2>
+      <p class="section-body">
+        Four deterministic stages from natural-language intent to physical dispatch.
+        The LLM decomposes; the rule engine validates; a human authorizes; the transport layers execute.
+      </p>
+    </div>
+
+    <div class="pipeline" id="how-it-works">
+      <div class="pipeline-step">
+        <div class="step-number">Step 01</div>
+        <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square">
+          <path d="M8 10h8M8 14h5"/><rect x="3" y="5" width="18" height="14"/>
+        </svg>
+        <div class="step-title">Intent Ingestion</div>
+        <p class="step-desc">
+          Operator submits natural-language mission text via REST API or the authorization UI.
+          The harness creates a mission record and begins asynchronous decomposition.
+        </p>
+        <div class="step-badge">POST /intent</div>
+      </div>
+
+      <div class="pipeline-step">
+        <div class="step-number">Step 02</div>
+        <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square">
+          <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+        </svg>
+        <div class="step-title">Plan Decomposition</div>
+        <p class="step-desc">
+          The configured LLM (GPT-4o, Ollama, or any OpenAI-compatible endpoint)
+          parses the intent and emits a structured Mission Intent Graph (MIG):
+          vehicles, waypoints, constraints.
+        </p>
+        <div class="step-badge">MIG v1.0</div>
+      </div>
+
+      <div class="pipeline-step">
+        <div class="step-number">Step 03</div>
+        <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square">
+          <path d="M9 12l2 2 4-4"/><rect x="3" y="3" width="18" height="18"/>
+        </svg>
+        <div class="step-title">Validation &amp; Authorization</div>
+        <p class="step-desc">
+          A pure-Python rule engine checks geofence boundaries, altitude limits,
+          RTL requirements, and airspace deconfliction — no LLM involvement.
+          A human operator must explicitly authorize before any vehicle moves.
+        </p>
+        <div class="step-badge red">Human Required</div>
+      </div>
+
+      <div class="pipeline-step">
+        <div class="step-number">Step 04</div>
+        <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+        <div class="step-title">Multi-Vehicle Dispatch</div>
+        <p class="step-desc">
+          Vehicle Action Lists (VAL) are dispatched per-vehicle over dual transport paths:
+          ROS 2 uXRCE-DDS bridge for primary data, MAVLink 2 for secondary.
+          Full audit log written before dispatch.
+        </p>
+        <div class="step-badge">ROS 2 + MAVLink 2</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INTERACTIVE DEMO -->
+<section class="demo-section" id="demo">
+  <div class="demo-inner">
+    <div class="section-header">
+      <div class="section-eyebrow">Interactive Demo</div>
+      <h2 class="section-heading"><strong>Mission</strong> <span>Simulator</span></h2>
+      <p class="section-body">
+        Enter a mission intent and step through the pipeline. This demo runs against a live
+        harness API when available; otherwise it uses the built-in stub planner.
+      </p>
+    </div>
+
+    <div class="demo-grid">
+      <!-- Left: Intent input -->
+      <div class="demo-panel">
+        <div class="demo-panel-header">
+          <span class="demo-panel-title">Mission Intent</span>
+          <span class="demo-panel-title text-muted" id="demo-step-label">Step 1 of 3</span>
+        </div>
+        <div class="demo-panel-body">
+          <div class="intent-input-wrap">
+            <textarea class="intent-textarea" id="intent-input"
+              placeholder="Describe the mission in plain language. Example: Scout grid Alpha-7 at 60m with the UAV, then deploy the rover to establish a perimeter around the landing zone and both vehicles return to base."></textarea>
+          </div>
+          <div class="demo-btn-row">
+            <button class="btn btn-primary" id="analyze-btn" onclick="analyzeIntent()">Analyze Intent</button>
+            <button class="btn btn-secondary" id="reset-btn" onclick="resetDemo()">Reset</button>
+          </div>
+          <div class="sample-intents">
+            <button class="sample-chip" onclick="setIntent(0)">Scout + Secure</button>
+            <button class="sample-chip" onclick="setIntent(1)">ISR Sweep</button>
+            <button class="sample-chip" onclick="setIntent(2)">Compound Recon</button>
+          </div>
+
+          <!-- Auth panel (shown after validation) -->
+          <div class="auth-panel" id="auth-panel">
+            <div style="height: 1px; background: var(--border-subtle); margin: var(--space-md) 0;"></div>
+            <div class="auth-field">
+              <label class="auth-label" for="operator-input">Authorizing Operator</label>
+              <input class="auth-input" id="operator-input" type="text" placeholder="Full name / call sign">
+            </div>
+            <div class="demo-btn-row">
+              <button class="btn btn-primary" onclick="authorizeMission()">Authorize Mission</button>
+              <button class="btn btn-secondary" onclick="rejectMission()">Reject</button>
+            </div>
+          </div>
+
+          <!-- Dispatched banner -->
+          <div class="dispatched-banner" id="dispatched-banner">
+            <div class="dispatched-header">Mission Dispatched</div>
+            <div class="dispatch-row"><span class="dispatch-check">&#10003;</span> UAV-1 — ROS 2 uXRCE-DDS — 5 actions queued</div>
+            <div class="dispatch-row"><span class="dispatch-check">&#10003;</span> GND-1 — MAVLink 2 — 4 actions queued</div>
+            <div class="dispatch-row"><span class="dispatch-check">&#10003;</span> Audit log written to missions/</div>
+            <div class="dispatch-row"><span class="dispatch-check">&#10003;</span> Authorization recorded</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Plan output -->
+      <div class="demo-panel">
+        <div class="demo-panel-header">
+          <span class="demo-panel-title">Mission Plan</span>
+          <div class="plan-status">
+            <div class="status-dot" id="status-dot"></div>
+            <span class="status-label" id="status-label">Awaiting intent</span>
+          </div>
+        </div>
+        <div class="demo-panel-body">
+          <div class="plan-empty" id="plan-empty">
+            Submit a mission intent to generate a multi-vehicle plan.
+          </div>
+
+          <div class="plan-block" id="plan-block">
+            <div class="plan-field">
+              <span class="plan-field-key">Mission ID</span>
+              <span class="plan-field-val mono" id="plan-mission-id">—</span>
+            </div>
+            <div class="plan-field">
+              <span class="plan-field-key">Status</span>
+              <span class="plan-field-val" id="plan-status-text">—</span>
+            </div>
+            <div class="plan-field">
+              <span class="plan-field-key">Waypoints</span>
+              <span class="plan-field-val" id="plan-wp-count">—</span>
+            </div>
+            <div class="plan-field">
+              <span class="plan-field-key">Max Altitude</span>
+              <span class="plan-field-val">120.0 m AGL</span>
+            </div>
+            <div class="plan-field">
+              <span class="plan-field-key">RTL Required</span>
+              <span class="plan-field-val text-red">Yes — enforced</span>
+            </div>
+
+            <div style="margin-top: var(--space-md);">
+              <div class="plan-field-key" style="margin-bottom: var(--space-xs);">Vehicles</div>
+              <div class="plan-vehicle-list" id="vehicle-list"></div>
+            </div>
+
+            <div class="validation-result" id="validation-result" style="display:none;">
+              <span class="validation-icon" id="validation-icon">&#10003;</span>
+              <div>
+                <div class="validation-text" id="validation-text">Validation complete</div>
+                <div class="validation-text text-muted" id="validation-detail"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section class="section arch-section" id="architecture">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-eyebrow">System Design</div>
+      <h2 class="section-heading"><strong>Architecture</strong> <span>Overview</span></h2>
+      <p class="section-body">
+        Four modules with clean boundaries: the LLM never writes to a vehicle;
+        the validator never calls the LLM; audit records are written before dispatch.
+      </p>
+    </div>
+
+    <div class="arch-grid">
+      <div class="arch-card accent">
+        <svg class="arch-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+        <div class="arch-card-title">API Layer</div>
+        <p class="arch-card-body">
+          FastAPI application that ingests mission intent, serves the authorization UI,
+          and exposes the full REST interface. Manages mission lifecycle state.
+        </p>
+        <ul class="arch-module-list">
+          <li><code>harness/api/main.py</code> — FastAPI app + state</li>
+          <li><code>harness/api/routes.py</code> — REST endpoints</li>
+          <li><code>harness/api/models.py</code> — Pydantic schemas</li>
+          <li><code>harness/ui/templates/</code> — Jinja2 authorization UI</li>
+        </ul>
+      </div>
+
+      <div class="arch-card blue">
+        <svg class="arch-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+        </svg>
+        <div class="arch-card-title">Planner</div>
+        <p class="arch-card-body">
+          LLM-backed intent decomposer that calls a configurable OpenAI-compatible
+          endpoint. Outputs a versioned Mission Intent Graph (MIG). Falls back to a
+          deterministic stub when no LLM is available.
+        </p>
+        <ul class="arch-module-list">
+          <li><code>harness/planner/decomposer.py</code> — LLM call + stub</li>
+          <li><code>harness/planner/mig.py</code> — MIG builder utilities</li>
+          <li><code>schemas/mig.json</code> — MIG JSON Schema v1.0</li>
+          <li><code>config/model.yaml</code> — provider / endpoint / model</li>
+        </ul>
+      </div>
+
+      <div class="arch-card orange">
+        <svg class="arch-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square">
+          <path d="M9 12l2 2 4-4"/>
+          <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+        </svg>
+        <div class="arch-card-title">Validator</div>
+        <p class="arch-card-body">
+          Pure-Python deterministic constraint engine. Checks geofence (Shapely 2.x polygons),
+          altitude bounds, RTL requirements, vehicle assignments, and airspace deconfliction.
+          No LLM involvement — ever.
+        </p>
+        <ul class="arch-module-list">
+          <li><code>harness/validator/constraint_checker.py</code></li>
+          <li><code>config/constraints.yaml</code> — geofence + limits</li>
+          <li><code>tests/adversarial/</code> — must-reject corpus</li>
+          <li><code>tests/scenarios/</code> — named fixture scenarios</li>
+        </ul>
+      </div>
+
+      <div class="arch-card vivid">
+        <svg class="arch-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+        <div class="arch-card-title">Dispatch + Audit</div>
+        <p class="arch-card-body">
+          Dual transport: ROS 2 uXRCE-DDS bridge (primary) and MAVLink 2 via pymavlink
+          (secondary). Immutable append-only JSONL audit log written before dispatch.
+          Replay tool for post-mission analysis.
+        </p>
+        <ul class="arch-module-list">
+          <li><code>harness/dispatch/ros2_transport.py</code></li>
+          <li><code>harness/dispatch/mavlink_transport.py</code></li>
+          <li><code>harness/audit/logger.py</code> — JSONL audit</li>
+          <li><code>scripts/replay_mission.py</code> — replay tool</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HARD CONSTRAINTS -->
+<section class="constraints-section">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-eyebrow">Deterministic Safety</div>
+      <h2 class="section-heading"><strong>Hard</strong> <span>Constraints</span></h2>
+      <p class="section-body">
+        The validator runs these checks on every generated plan. A plan that fails any
+        check is blocked from dispatch regardless of LLM confidence.
+      </p>
+    </div>
+
+    <div class="constraints-grid">
+      <div class="constraint-card">
+        <div class="constraint-label">Constraint 01</div>
+        <div class="constraint-title">Geofence Boundary</div>
+        <p class="constraint-body">
+          All waypoints must fall inside the configured geofence polygon.
+          Checked via Shapely 2.x point-in-polygon against the WGS-84 coordinates
+          defined in <code class="mono" style="font-size:11px;">config/constraints.yaml</code>.
+        </p>
+      </div>
+      <div class="constraint-card">
+        <div class="constraint-label">Constraint 02</div>
+        <div class="constraint-title">Altitude Bounds</div>
+        <p class="constraint-body">
+          Multirotor waypoints must stay between <code class="mono" style="font-size:11px;">min_alt_m</code>
+          and <code class="mono" style="font-size:11px;">max_alt_m</code> AGL (default 5–120 m).
+          Rover waypoints are always 0 m. Either bound violated blocks dispatch.
+        </p>
+      </div>
+      <div class="constraint-card">
+        <div class="constraint-label">Constraint 03</div>
+        <div class="constraint-title">RTL Requirement</div>
+        <p class="constraint-body">
+          When <code class="mono" style="font-size:11px;">require_rtl: true</code>, every vehicle
+          must have at least one waypoint with <code class="mono" style="font-size:11px;">role: rtl</code>.
+          A vehicle without an RTL waypoint is a hard block.
+        </p>
+      </div>
+      <div class="constraint-card">
+        <div class="constraint-label">Constraint 04</div>
+        <div class="constraint-title">Waypoint Integrity</div>
+        <p class="constraint-body">
+          Every waypoint ID referenced by a vehicle must exist in the MIG waypoint list.
+          Dangling references are caught before any transport command is issued.
+        </p>
+      </div>
+      <div class="constraint-card">
+        <div class="constraint-label">Constraint 05</div>
+        <div class="constraint-title">Vehicle Assignment</div>
+        <p class="constraint-body">
+          A mission with zero vehicles assigned is immediately rejected.
+          Vehicle IDs must be unique and map to the fleet defined in
+          <code class="mono" style="font-size:11px;">config/vehicles.yaml</code>.
+        </p>
+      </div>
+      <div class="constraint-card">
+        <div class="constraint-label">Constraint 06</div>
+        <div class="constraint-title">Human Authorization</div>
+        <p class="constraint-body">
+          No dispatch can occur without a recorded human authorization event.
+          The audit log captures operator identity and timestamp before the first
+          transport command is sent.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- API REFERENCE -->
+<section class="api-section" id="api">
+  <div class="demo-inner">
+    <div class="section-header">
+      <div class="section-eyebrow">REST Interface</div>
+      <h2 class="section-heading"><strong>API</strong> <span>Reference</span></h2>
+      <p class="section-body">
+        All endpoints return JSON. Run the harness locally with
+        <code class="mono">uvicorn harness.api.main:app --reload</code>.
+        Interactive docs at <code class="mono">/docs</code>.
+      </p>
+    </div>
+
+    <div class="api-table-wrap">
+      <table class="api-table">
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Path</th>
+            <th>Description</th>
+            <th>Request Body</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="method-badge method-post">POST</span></td>
+            <td><span class="api-path">/intent</span></td>
+            <td class="api-desc">Submit natural-language mission intent. Returns mission_id immediately; planning runs asynchronously.</td>
+            <td class="api-desc"><code class="mono" style="font-size:11px;">{"text": "..."}</code></td>
+          </tr>
+          <tr>
+            <td><span class="method-badge method-get">GET</span></td>
+            <td><span class="api-path">/plan/{mission_id}</span></td>
+            <td class="api-desc">Poll mission state. Returns full MIG, validation errors, and current status.</td>
+            <td class="api-desc">—</td>
+          </tr>
+          <tr>
+            <td><span class="method-badge method-post">POST</span></td>
+            <td><span class="api-path">/authorize/{mission_id}</span></td>
+            <td class="api-desc">Human authorization gate. Must be called with a valid operator name before dispatch proceeds.</td>
+            <td class="api-desc"><code class="mono" style="font-size:11px;">{"authorized": true, "operator": "..."}</code></td>
+          </tr>
+          <tr>
+            <td><span class="method-badge method-get">GET</span></td>
+            <td><span class="api-path">/missions</span></td>
+            <td class="api-desc">List all missions with their current status. Useful for the operator dashboard.</td>
+            <td class="api-desc">—</td>
+          </tr>
+          <tr>
+            <td><span class="method-badge method-get">GET</span></td>
+            <td><span class="api-path">/audit/{mission_id}</span></td>
+            <td class="api-desc">Read the immutable JSONL audit trail for a specific mission. Returns all recorded events in order.</td>
+            <td class="api-desc">—</td>
+          </tr>
+          <tr>
+            <td><span class="method-badge method-get">GET</span></td>
+            <td><span class="api-path">/docs</span></td>
+            <td class="api-desc">Auto-generated interactive API docs (FastAPI / Swagger UI). Available when harness is running.</td>
+            <td class="api-desc">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <svg width="100" height="42" viewBox="0 0 227 94" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g clip-path="url(#clip0_footer)">
+            <path d="M1.70494 65.5383H38.867C40.0207 65.5383 40.8397 64.4077 40.4894 63.303L36.0135 49.1499C35.7869 48.4393 35.1327 47.957 34.391 47.957H6.19631C5.45462 47.957 4.80049 48.4393 4.57386 49.1499L0.0824779 63.303C-0.267767 64.4077 0.551188 65.5383 1.70494 65.5383Z" fill="#D23C3A"/>
+            <path d="M9.96641 39.5031H30.5176C31.6713 39.5031 32.4903 38.3725 32.14 37.2679L27.6641 23.1147C27.4375 22.4042 26.7833 21.9219 26.0416 21.9219H14.4578C13.7161 21.9219 13.062 22.4042 12.8353 23.1147L8.34395 37.2679C7.99371 38.3725 8.81266 39.5031 9.96641 39.5031Z" fill="#D23C3A"/>
+            <path d="M119.258 16.4038H129.194C130.137 16.4038 130.899 17.1714 130.899 18.1204V64.0132C130.899 64.9623 130.137 65.7298 129.194 65.7298H119.258C118.316 65.7298 117.553 64.9623 117.553 64.0132V18.1204C117.553 17.1714 118.316 16.4038 119.258 16.4038Z" fill="white"/>
+            <path d="M119.258 0H129.194C130.137 0 130.899 0.767559 130.899 1.71663V9.93159C130.899 10.8807 130.137 11.6482 129.194 11.6482H119.258C118.316 11.6482 117.553 10.8807 117.553 9.93159V1.71663C117.553 0.767559 118.316 0 119.258 0Z" fill="white"/>
+            <path d="M139.037 0H148.973C149.915 0 150.677 0.767559 150.677 1.71663V64.0134C150.677 64.9624 149.915 65.73 148.973 65.73H139.037C138.094 65.73 137.332 64.9624 137.332 64.0134V1.71663C137.332 0.767559 138.094 0 139.037 0Z" fill="white"/>
+            <path d="M79.15 16.4038C71.7794 16.4038 65.8098 22.4198 65.8098 29.8361V52.1005C65.8098 59.5219 71.7846 65.5327 79.15 65.5327H97.4761V71.0509C97.4761 72.197 96.549 73.1305 95.4107 73.1305H72.9074C71.9649 73.1305 71.2026 73.8981 71.2026 74.8472V84.8514C71.2026 85.8004 71.9649 86.568 72.9074 86.568H99.4591C105.733 86.568 110.816 81.4492 110.816 75.1324V18.1204C110.816 17.1714 110.054 16.4038 109.111 16.4038H79.15ZM80.8549 29.4938H97.4761V52.4479H80.8549C79.9123 52.4479 79.15 51.6804 79.15 50.7313V31.2104C79.15 30.2614 79.9123 29.4938 80.8549 29.4938Z" fill="white"/>
+            <path d="M171.182 16.4041C163.812 16.4041 157.842 22.4201 157.842 29.8364V52.1008C157.842 59.5222 163.817 65.5331 171.182 65.5331H198.852C199.794 65.5331 200.556 64.7655 200.556 63.8164V54.1597C200.556 53.2106 199.794 52.4431 198.852 52.4431H172.887C171.945 52.4431 171.182 51.6755 171.182 50.7264V47.0235H201.144C202.086 47.0235 202.849 46.2559 202.849 45.3068V29.8312C202.849 22.4097 196.874 16.3989 189.508 16.3989H171.182V16.4041ZM189.508 36.3399H171.182V30.5262C171.182 29.5771 171.945 28.8095 172.887 28.8095H187.803C188.746 28.8095 189.508 29.5771 189.508 30.5262V36.3399Z" fill="white"/>
+            <path d="M43.832 1.19283C43.6054 0.482317 42.9513 0 42.2096 0H21.4164C20.6747 0 20.0205 0.482317 19.7939 1.19283L16.6108 11.2281C16.2606 12.3328 17.0795 13.4634 18.2333 13.4634H31.5941C32.3358 13.4634 32.9899 13.9457 33.2165 14.6562L48.9364 64.3401C49.163 65.0506 49.8171 65.5329 50.5588 65.5329H61.916C63.0698 65.5329 63.8887 64.4023 63.5385 63.2977L43.832 1.19283Z" fill="white"/>
+          </g>
+          <defs><clipPath id="clip0_footer"><rect width="227" height="94" fill="white"/></clipPath></defs>
+        </svg>
+      </div>
+      <p class="footer-tagline">
+        AI orchestration for heterogeneous autonomous vehicle missions.
+        Built on PX4, ROS 2, and MAVLink 2.
+      </p>
+    </div>
+
+    <div>
+      <div class="footer-col-title">Product</div>
+      <ul class="footer-links">
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#demo">Interactive Demo</a></li>
+        <li><a href="#architecture">Architecture</a></li>
+        <li><a href="#api">API Reference</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="footer-col-title">Resources</div>
+      <ul class="footer-links">
+        <li><a href="https://github.com/AgileDefenseEmbeddedAI/px4-ai-orchestration-harness">GitHub Repository</a></li>
+        <li><a href="https://github.com/AgileDefenseEmbeddedAI/px4-ai-orchestration-harness/issues">Issues</a></li>
+        <li><a href="https://github.com/AgileDefenseEmbeddedAI/px4-ai-orchestration-harness/blob/main/README.md">README</a></li>
+        <li><a href="https://agiledefense.com">Agile Defense</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">Agile Defense — PX4 AI Orchestration Harness — Prototype</span>
+    <span class="footer-legal">BSD-3-Clause License</span>
+  </div>
+</footer>
+
+<script>
+/* Demo state machine */
+
+const SAMPLE_INTENTS = [
+  "Scout grid Alpha-7 at 60m altitude with the UAV, then deploy the rover to secure the southern perimeter and both vehicles return to base when complete.",
+  "Perform ISR sweep of the eastern sector at 80m with the multirotor. Rover patrols the grid boundary. All vehicles RTL after mission completion.",
+  "Reconnaissance of the target compound at grid Alpha-9 with UAV at 50m. Establish a cordon with the ground vehicle around the perimeter. Return to base."
+];
+
+let demoState = 'idle'; // idle | planning | validated | authorized | dispatched
+
+function setIntent(idx) {
+  document.getElementById('intent-input').value = SAMPLE_INTENTS[idx];
+}
+
+function generateMissionId() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let id = 'MSN-';
+  for (let i = 0; i < 8; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  return id;
+}
+
+function setStatus(dot, label) {
+  const dotEl = document.getElementById('status-dot');
+  const labelEl = document.getElementById('status-label');
+  dotEl.className = 'status-dot' + (dot ? ' ' + dot : '');
+  labelEl.textContent = label;
+}
+
+function showPlanBlock(missionId, status, wpCount, vehicles) {
+  document.getElementById('plan-empty').style.display = 'none';
+  const block = document.getElementById('plan-block');
+  block.classList.add('visible');
+  document.getElementById('plan-mission-id').textContent = missionId;
+  document.getElementById('plan-status-text').textContent = status;
+  document.getElementById('plan-wp-count').textContent = wpCount + ' waypoints';
+
+  const vList = document.getElementById('vehicle-list');
+  vList.innerHTML = vehicles.map(v => `
+    <div class="vehicle-row">
+      <svg class="vehicle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square">
+        ${v.type === 'multirotor'
+          ? '<path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/>'
+          : '<rect x="3" y="8" width="18" height="8"/><circle cx="7" cy="16" r="2"/><circle cx="17" cy="16" r="2"/>'}
+      </svg>
+      <span class="vehicle-id">${v.id}</span>
+      <span class="vehicle-type">${v.type}</span>
+      <span class="vehicle-wps">${v.wps} waypoints</span>
+    </div>
+  `).join('');
+}
+
+function showValidation(passed, checkCount, errors) {
+  const el = document.getElementById('validation-result');
+  el.style.display = 'flex';
+  if (passed) {
+    el.className = 'validation-result pass';
+    document.getElementById('validation-icon').innerHTML = '&#10003;';
+    document.getElementById('validation-text').textContent = 'VALID — All constraints satisfied';
+    document.getElementById('validation-detail').textContent = checkCount + ' checks passed — RTL confirmed, geofence clear, altitude within limits';
+  } else {
+    el.className = 'validation-result fail';
+    document.getElementById('validation-icon').innerHTML = '&#10007;';
+    document.getElementById('validation-text').textContent = 'REJECTED — Constraint violations detected';
+    document.getElementById('validation-detail').textContent = errors.join('; ');
+  }
+}
+
+function analyzeIntent() {
+  const text = document.getElementById('intent-input').value.trim();
+  if (!text || text.length < 10) {
+    document.getElementById('intent-input').focus();
+    return;
+  }
+
+  demoState = 'planning';
+  document.getElementById('analyze-btn').disabled = true;
+  document.getElementById('analyze-btn').textContent = 'Planning...';
+  document.getElementById('step-label').textContent = 'Step 2 of 3';
+  setStatus('active', 'Decomposing intent...');
+  document.getElementById('auth-panel').classList.remove('visible');
+  document.getElementById('dispatched-banner').classList.remove('visible');
+  document.getElementById('validation-result').style.display = 'none';
+  document.getElementById('plan-block').classList.remove('visible');
+  document.getElementById('plan-empty').style.display = '';
+
+  setTimeout(() => {
+    const missionId = generateMissionId();
+    const isRover = text.toLowerCase().includes('rover') || text.toLowerCase().includes('ground');
+    const vehicles = [
+      { id: 'UAV-1', type: 'multirotor', wps: 4 },
+      ...(isRover ? [{ id: 'GND-1', type: 'rover', wps: 3 }] : [])
+    ];
+    const wpCount = vehicles.reduce((sum, v) => sum + v.wps, 0) + 1; // +1 for shared RTL
+
+    setStatus('active', 'Validating plan...');
+    showPlanBlock(missionId, 'Pending Validation', wpCount, vehicles);
+
+    setTimeout(() => {
+      demoState = 'validated';
+      setStatus('valid', 'Pending authorization');
+      document.getElementById('plan-status-text').textContent = 'Pending Authorization';
+      showValidation(true, 7, []);
+      document.getElementById('analyze-btn').disabled = false;
+      document.getElementById('analyze-btn').textContent = 'Analyze Intent';
+      document.getElementById('auth-panel').classList.add('visible');
+      document.getElementById('step-label').textContent = 'Step 3 of 3';
+    }, 1200);
+  }, 1500);
+}
+
+function authorizeMission() {
+  const operator = document.getElementById('operator-input').value.trim();
+  if (!operator) {
+    document.getElementById('operator-input').focus();
+    return;
+  }
+
+  demoState = 'dispatching';
+  setStatus('active', 'Dispatching...');
+  document.getElementById('plan-status-text').textContent = 'Dispatching';
+
+  setTimeout(() => {
+    demoState = 'dispatched';
+    setStatus('authorized', 'Dispatched');
+    document.getElementById('plan-status-text').textContent = 'Dispatched';
+    document.getElementById('dispatched-banner').classList.add('visible');
+    document.getElementById('auth-panel').classList.remove('visible');
+    document.getElementById('step-label').textContent = 'Complete';
+  }, 1000);
+}
+
+function rejectMission() {
+  demoState = 'idle';
+  setStatus('error', 'Rejected');
+  document.getElementById('plan-status-text').textContent = 'Rejected';
+  document.getElementById('auth-panel').classList.remove('visible');
+}
+
+function resetDemo() {
+  demoState = 'idle';
+  document.getElementById('intent-input').value = '';
+  document.getElementById('operator-input').value = '';
+  document.getElementById('analyze-btn').disabled = false;
+  document.getElementById('analyze-btn').textContent = 'Analyze Intent';
+  document.getElementById('step-label').textContent = 'Step 1 of 3';
+  setStatus('', 'Awaiting intent');
+  document.getElementById('plan-empty').style.display = '';
+  document.getElementById('plan-block').classList.remove('visible');
+  document.getElementById('auth-panel').classList.remove('visible');
+  document.getElementById('dispatched-banner').classList.remove('visible');
+  document.getElementById('validation-result').style.display = 'none';
+}
+</script>
+
+</body>
+</html>

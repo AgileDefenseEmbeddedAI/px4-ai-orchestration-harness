@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block title %}Authorize Mission {{ mission_id }}{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 32px;">
+  <a href="/ui" style="font-size: 12px; color: rgba(255,255,255,0.5); letter-spacing: 0.06em; text-transform: uppercase;">
+    &larr; All Missions
+  </a>
+</div>
+
+<div class="section-head">
+  <div class="section-eye">Human Authorization Required</div>
+  <h1 class="section-title"><strong>Authorize</strong> Mission</h1>
+</div>
+
+{% set m = mission %}
+{% set mig = m.mig %}
+
+<!-- Mission summary -->
+<div class="card" style="margin-bottom: 16px;">
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+    <div>
+      <div style="font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px;">Mission ID</div>
+      <div class="mono" style="font-size: 18px;">{{ mission_id }}</div>
+    </div>
+    <div>
+      {% set s = m.status %}
+      {% if s == 'pending_authorization' %}<span class="badge badge-pending">Pending Authorization</span>
+      {% elif s == 'authorized' %}<span class="badge badge-authorized">Authorized</span>
+      {% elif s == 'dispatched' %}<span class="badge badge-dispatched">Dispatched</span>
+      {% elif s == 'validation_failed' %}<span class="badge badge-failed">Validation Failed</span>
+      {% elif s == 'failed' %}<span class="badge badge-failed">Failed</span>
+      {% else %}<span class="badge">{{ s }}</span>{% endif %}
+    </div>
+  </div>
+
+  {% if mig %}
+  <div style="margin-bottom: 12px;">
+    <div style="font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px;">Mission Intent</div>
+    <p style="font-size: 15px; line-height: 1.5; color: rgba(255,255,255,0.9); background: var(--navy-d); padding: 12px 16px; border-left: 3px solid rgba(255,255,255,0.1);">
+      {{ mig.intent }}
+    </p>
+  </div>
+  {% endif %}
+</div>
+
+{% if mig %}
+<!-- Vehicle plan -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+  <div class="card">
+    <div class="card-title">Vehicle Assignment</div>
+    {% if mig.vehicles %}
+    <table class="table">
+      <thead>
+        <tr><th>Vehicle</th><th>Type</th><th>Waypoints</th></tr>
+      </thead>
+      <tbody>
+        {% for v in mig.vehicles %}
+        <tr>
+          <td class="mono">{{ v.id }}</td>
+          <td style="font-size: 13px; color: rgba(255,255,255,0.7);">{{ v.vehicle_type }}</td>
+          <td style="font-size: 13px;">{{ v.waypoints | length }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p style="color: rgba(255,255,255,0.5); font-size: 13px;">No vehicles assigned.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-title">Constraints</div>
+    <table class="table">
+      <tbody>
+        <tr><td style="color:rgba(255,255,255,0.6); font-size:12px;">Max Altitude</td><td class="mono">{{ mig.constraints.max_alt_m }} m AGL</td></tr>
+        <tr><td style="color:rgba(255,255,255,0.6); font-size:12px;">Min Altitude</td><td class="mono">{{ mig.constraints.min_alt_m }} m AGL</td></tr>
+        <tr><td style="color:rgba(255,255,255,0.6); font-size:12px;">RTL Required</td><td style="font-size:13px; color: {% if mig.constraints.require_rtl %}#4caf50{% else %}#d23c3a{% endif %};">{{ 'Yes' if mig.constraints.require_rtl else 'No' }}</td></tr>
+        <tr><td style="color:rgba(255,255,255,0.6); font-size:12px;">Max Range</td><td class="mono">{{ mig.constraints.max_range_m }} m</td></tr>
+        <tr><td style="color:rgba(255,255,255,0.6); font-size:12px;">Waypoints</td><td style="font-size:13px;">{{ mig.waypoints | length }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Waypoints -->
+<div class="card" style="margin-bottom: 16px;">
+  <div class="card-title">Waypoint Plan</div>
+  <table class="table">
+    <thead>
+      <tr><th>ID</th><th>Lat</th><th>Lon</th><th>Alt (m)</th><th>Role</th></tr>
+    </thead>
+    <tbody>
+      {% for wp in mig.waypoints %}
+      <tr>
+        <td class="mono">{{ wp.id }}</td>
+        <td style="font-size:13px;">{{ "%.4f" | format(wp.lat) }}</td>
+        <td style="font-size:13px;">{{ "%.4f" | format(wp.lon) }}</td>
+        <td style="font-size:13px;">{{ wp.alt_m }}</td>
+        <td>
+          {% if wp.role == 'rtl' %}
+            <span style="font-size:11px; color: #4caf50; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;">RTL</span>
+          {% else %}
+            <span style="font-size:12px; color: rgba(255,255,255,0.6);">{{ wp.role }}</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<!-- Validation result -->
+{% if m.validation_errors %}
+<div class="alert alert-error" style="margin-bottom: 16px;">
+  <div style="font-weight: 600; margin-bottom: 8px; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase;">Validation Failed — Mission Blocked</div>
+  <ul style="list-style: none; padding: 0;">
+    {% for err in m.validation_errors %}
+    <li style="font-size: 13px; color: rgba(255,255,255,0.8); padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">{{ err }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% elif m.status == 'pending_authorization' %}
+<div class="alert alert-success" style="margin-bottom: 16px;">
+  <div style="font-size: 13px; font-weight: 600; color: #4caf50;">VALID — All constraint checks passed. Awaiting human authorization.</div>
+</div>
+{% endif %}
+
+<!-- Already authorized or dispatched -->
+{% if m.status in ('authorized', 'dispatching', 'dispatched') %}
+<div class="alert alert-info" style="margin-bottom: 24px;">
+  <div style="font-size: 13px; font-weight: 600; color: #a9d8fb; margin-bottom: 4px;">Mission Authorized</div>
+  <div style="font-size: 13px; color: rgba(255,255,255,0.7);">
+    Authorized by: <strong>{{ m.authorized_by }}</strong>
+    {% if m.authorized_at %}at {{ m.authorized_at.strftime('%Y-%m-%d %H:%M:%S UTC') if m.authorized_at is string else m.authorized_at }}{% endif %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Authorization form (only shown when pending) -->
+{% if m.status == 'pending_authorization' %}
+<div class="card">
+  <div class="card-title">Operator Authorization</div>
+  <p style="font-size: 13px; color: rgba(255,255,255,0.65); margin-bottom: 20px; line-height: 1.5;">
+    By authorizing this mission, you confirm you have reviewed the plan, waypoints, and constraints.
+    Authorization is recorded in the immutable audit log with your identity and timestamp.
+  </p>
+  <form id="auth-form">
+    <div class="field">
+      <label for="operator">Authorizing Operator (name / call sign)</label>
+      <input type="text" id="operator" name="operator" placeholder="Full name or call sign" required>
+    </div>
+    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+      <button type="submit" class="btn btn-red" id="auth-btn">Authorize Mission</button>
+      <button type="button" class="btn btn-outline" id="reject-btn">Reject Mission</button>
+      <span id="auth-status" style="font-size: 13px; color: rgba(255,255,255,0.65);"></span>
+    </div>
+  </form>
+</div>
+
+<script>
+const MISSION_ID = {{ mission_id | tojson }};
+
+async function doAuth(authorized) {
+  const operator = document.getElementById('operator').value.trim();
+  const status = document.getElementById('auth-status');
+  if (!operator) { document.getElementById('operator').focus(); return; }
+
+  status.textContent = authorized ? 'Authorizing...' : 'Rejecting...';
+  document.getElementById('auth-btn').disabled = true;
+  document.getElementById('reject-btn').disabled = true;
+
+  try {
+    const resp = await fetch(`/authorize/${MISSION_ID}`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({authorized, operator})
+    });
+    const data = await resp.json();
+    if (resp.ok) {
+      status.textContent = authorized ? 'Authorized. Dispatching...' : 'Mission rejected.';
+      setTimeout(() => location.reload(), 1500);
+    } else {
+      status.textContent = `Error: ${JSON.stringify(data.detail || data)}`;
+      document.getElementById('auth-btn').disabled = false;
+      document.getElementById('reject-btn').disabled = false;
+    }
+  } catch(err) {
+    status.textContent = `Request failed: ${err.message}`;
+    document.getElementById('auth-btn').disabled = false;
+    document.getElementById('reject-btn').disabled = false;
+  }
+}
+
+document.getElementById('auth-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  doAuth(true);
+});
+document.getElementById('reject-btn').addEventListener('click', function() {
+  doAuth(false);
+});
+</script>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,8 @@
+name: "Scout and Secure"
+description: "UAV scouts a target area, rover secures the perimeter"
+intent: "Scout grid reference Alpha-7 with the multirotor, then deploy the rover to secure the perimeter and both vehicles return to base"
+expected_vehicles:
+  - type: multirotor
+  - type: rover
+expected_min_waypoints: 4
+must_have_rtl: true
