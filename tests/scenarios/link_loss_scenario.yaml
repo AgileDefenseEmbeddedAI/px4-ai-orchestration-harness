@@ -1,0 +1,59 @@
+name: "Link Loss Contingency — Two Vehicle"
+description: >
+  Two-vehicle mission (multirotor + rover) with a three-rung contingency ladder.
+  The GCS link is severed at T+15 s via inject_link_loss.sh; the executor on
+  each vehicle fires its ladder autonomously without any ground-station contact.
+
+intent: >
+  Scout sector Bravo with UAV while rover secures the perimeter. If link is
+  lost, vehicles execute their pre-authorized contingency ladder in sequence.
+
+fault_injection:
+  type: link_loss
+  inject_at_s: 15
+  restore_after_s: 120
+
+vehicles:
+  - id: UAV-1
+    vehicle_type: multirotor
+    mavlink_connection: "udp:127.0.0.1:14540"
+    contingency_ladder:
+      rungs:
+        - trigger: "link_loss_T+0"
+          actions:
+            - cmd: "loiter"
+              params:
+                duration_s: 30
+        - trigger: "link_loss_T+30"
+          actions:
+            - cmd: "rtl"
+              params: {}
+        - trigger: "link_loss_T+60"
+          actions:
+            - cmd: "land"
+              params: {}
+
+  - id: GND-1
+    vehicle_type: rover
+    mavlink_connection: "udp:127.0.0.1:14541"
+    contingency_ladder:
+      rungs:
+        - trigger: "link_loss_T+0"
+          actions:
+            - cmd: "loiter"
+              params:
+                duration_s: 30
+        - trigger: "link_loss_T+30"
+          actions:
+            - cmd: "rtl"
+              params: {}
+        - trigger: "link_loss_T+60"
+          actions:
+            - cmd: "land"
+              params: {}
+
+expected:
+  rung_count: 3
+  first_rung_fires_within_s: 5
+  no_llm_calls: true
+  audit_events_per_rung: 1
