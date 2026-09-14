@@ -9,8 +9,10 @@ Endpoints:
   GET  /audit/{mission_id}  — retrieve audit log entries
 """
 
+import json
 import logging
 from datetime import datetime, timezone
+from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
 
@@ -21,61 +23,22 @@ from harness.api.models import (
     MissionStatus,
 )
 from harness.audit import logger as audit_module
-from harness.planner import decomposer
+from harness.planner import mig_builder, plan_decomposer
 from harness.planner.mig import new_mission_id
 from harness.validator import constraint_checker
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-
-# ---------------------------------------------------------------------------
-# Background task: plan + validate
-# ---------------------------------------------------------------------------
+_MISSIONS_DIR = Path(__file__).parents[2] / "missions"
 
 
-async def _plan_mission(
-    mission_id: str,
-    text: str,
-    missions: dict,
-    config: dict,
-    constraints_config: dict,
-) -> None:
-    """Decompose intent → validate → update mission state."""
-    try:
-        audit_module.log_event(mission_id, "planning_started", {"intent": text})
-
-        mig = await decomposer.decompose_intent(text, config)
-        # Ensure the MIG uses the mission_id we generated (stub plan makes its own)
-        mig.mission_id = mission_id
-
-        audit_module.log_event(
-            mission_id,
-            "mig_generated",
-            {
-                "vehicle_count": len(mig.vehicles),
-                "waypoint_count": len(mig.waypoints),
-            },
-        )
-
-        is_valid, errors = constraint_checker.validate(mig, constraints_config)
-
-        if is_valid:
-            mig.status = MissionStatus.pending_authorization
-            audit_module.log_event(mission_id, "validation_passed", {})
-        else:
-            mig.status = MissionStatus.validation_failed
-            mig.validation_errors = errors
-            audit_module.log_event(mission_id, "validation_failed", {"errors": errors})
-
-        missions[mission_id].mig = mig
-        missions[mission_id].status = mig.status
-        missions[mission_id].validation_errors = mig.validation_errors
-
-    except Exception as exc:
-        logger.exception(f"Planning failed for mission {mission_id}: {exc}")
-        missions[mission_id].status = MissionStatus.failed
-        audit_module.log_event(mission_id, "planning_error", {"error": str(exc)})
+def _store_mission_artifact(mission_id: str, mig_dict: dict, plans: list[dict]) -> None:
+    """Write MIG + plans to missions/<mission_id>.json for audit/replay."""
+    _MISSIONS_DIR.mkdir(exist_ok=True)
+    artifact = {"mig": mig_dict, "plans": plans}
+    path = _MISSIONS_DIR / f"{mission_id}.json"
+    path.write_text(json.dumps(artifact, indent=2, default=str))
 
 
 # ---------------------------------------------------------------------------
@@ -151,8 +114,9 @@ async def post_intent(
     """
     Accept a natural-language mission intent.
 
-    Immediately returns a mission_id.  Planning and validation run in the
-    background; poll GET /plan/{mission_id} for status.
+    Runs the LLM decomposer synchronously, validates the resulting MIG, and
+    expands it into per-vehicle plans.  Returns the full MIG and plan list so
+    the operator can review before authorizing.
     """
     mission_id = new_mission_id()
     missions: dict = request.app.state.missions
@@ -165,16 +129,50 @@ async def post_intent(
         validation_errors=[],
     )
 
-    background_tasks.add_task(
-        _plan_mission,
-        mission_id,
-        body.text,
-        missions,
-        config,
-        constraints_config,
-    )
+    try:
+        audit_module.log_event(mission_id, "planning_started", {"intent": body.text})
 
-    return {"mission_id": mission_id, "status": "planning"}
+        mig = await mig_builder.build_mig_from_intent(body.text, config)
+        mig.mission_id = mission_id
+
+        audit_module.log_event(
+            mission_id,
+            "mig_generated",
+            {"vehicle_count": len(mig.vehicles), "waypoint_count": len(mig.waypoints)},
+        )
+
+        is_valid, errors = constraint_checker.validate(mig, constraints_config)
+
+        if is_valid:
+            mig.status = MissionStatus.pending_authorization
+            audit_module.log_event(mission_id, "validation_passed", {})
+        else:
+            mig.status = MissionStatus.validation_failed
+            mig.validation_errors = errors
+            audit_module.log_event(mission_id, "validation_failed", {"errors": errors})
+
+        plans = plan_decomposer.decompose(mig)
+
+        mig_dict = mig.model_dump(mode="json")
+        plans_list = [p.model_dump(mode="json") for p in plans]
+        _store_mission_artifact(mission_id, mig_dict, plans_list)
+
+        missions[mission_id].mig = mig
+        missions[mission_id].status = mig.status
+        missions[mission_id].validation_errors = mig.validation_errors
+
+        return {
+            "mission_id": mission_id,
+            "status": mig.status,
+            "mig": mig_dict,
+            "plan": plans_list,
+        }
+
+    except Exception as exc:
+        logger.exception("Planning failed for mission %s: %s", mission_id, exc)
+        missions[mission_id].status = MissionStatus.failed
+        audit_module.log_event(mission_id, "planning_error", {"error": str(exc)})
+        return {"mission_id": mission_id, "status": MissionStatus.failed}
 
 
 @router.get("/plan/{mission_id}", response_model=MissionResponse, summary="Get plan/status")
