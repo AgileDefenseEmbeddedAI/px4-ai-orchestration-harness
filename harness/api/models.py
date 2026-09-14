@@ -4,7 +4,9 @@ Pydantic v2 data models for the PX4 AI Orchestration Harness.
 Covers:
   - MIG  (Mission Intent Graph) — the canonical mission representation
   - VAL  (Vehicle Action List)  — per-vehicle action sequence sent to dispatch
-  - Supporting types: Vehicle, Waypoint, Constraints, enums, request/response bodies
+  - Plan (Per-Vehicle Plan)     — expanded PX4 MAV_CMD primitives per vehicle
+  - Supporting types: Vehicle, Waypoint, Constraints, ContingencyRung,
+    ConditionalBranch, enums, request/response bodies
 """
 
 from datetime import datetime, timezone
@@ -58,12 +60,19 @@ class VAL(BaseModel):
 # ---------------------------------------------------------------------------
 
 
+class WaypointTiming(BaseModel):
+    earliest_sec: Optional[float] = None
+    latest_sec: Optional[float] = None
+    dwell_sec: Optional[float] = None
+
+
 class Waypoint(BaseModel):
     id: str
     lat: float
     lon: float
     alt_m: float
     role: str  # e.g. "survey", "loiter", "perimeter", "rtl"
+    timing: Optional[WaypointTiming] = None
 
 
 class Vehicle(BaseModel):
@@ -82,8 +91,30 @@ class Constraints(BaseModel):
     max_range_m: float = 5000.0
 
 
+class ContingencyAction(BaseModel):
+    action_type: str
+    vehicle_id: Optional[str] = None
+    waypoint_id: Optional[str] = None
+    parameters: Optional[dict] = None
+
+
+class ContingencyRung(BaseModel):
+    trigger: str
+    priority: int = 100
+    actions: list[ContingencyAction] = Field(default_factory=list)
+
+
+class ConditionalBranch(BaseModel):
+    condition: str
+    if_vehicle_id: str
+    then: list[ContingencyAction] = Field(default_factory=list)
+    else_: list[ContingencyAction] = Field(default_factory=list, alias="else")
+
+    model_config = {"populate_by_name": True}
+
+
 class MIG(BaseModel):
-    version: str = "1.0"
+    version: str = "1.1"
     mission_id: str
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     intent: str
@@ -92,6 +123,35 @@ class MIG(BaseModel):
     constraints: Constraints = Field(default_factory=Constraints)
     status: MissionStatus = MissionStatus.planning
     validation_errors: list[str] = Field(default_factory=list)
+    contingency_ladder: list[ContingencyRung] = Field(default_factory=list)
+    conditional_branches: list[ConditionalBranch] = Field(default_factory=list)
+
+
+# ---------------------------------------------------------------------------
+# Per-Vehicle Plan — expanded PX4 MAV_CMD primitives (produced by plan_decomposer)
+# ---------------------------------------------------------------------------
+
+
+class MavCommand(BaseModel):
+    seq: int
+    mav_cmd: str
+    mav_cmd_id: int
+    role: Optional[str] = None
+    lat: Optional[float] = None
+    lon: Optional[float] = None
+    alt_m: Optional[float] = None
+    param1: Optional[float] = None
+    param2: Optional[float] = None
+    param3: Optional[float] = None
+    param4: Optional[float] = None
+
+
+class Plan(BaseModel):
+    version: str = "1.0"
+    mission_id: str
+    vehicle_id: str
+    vehicle_type: VehicleType
+    commands: list[MavCommand] = Field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------

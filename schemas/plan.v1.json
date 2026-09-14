@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agiledefense.example/schemas/plan/1.0",
+  "title": "Per-Vehicle Plan v1.0",
+  "description": "Fully-expanded per-vehicle plan artifact produced by the plan decomposer. Contains PX4 MAV_CMD primitives appropriate for the vehicle class. Never produced by the LLM; always derived deterministically from the MIG.",
+  "type": "object",
+  "required": ["version", "mission_id", "vehicle_id", "vehicle_type", "commands"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "mission_id": {
+      "type": "string",
+      "description": "Parent MIG mission ID"
+    },
+    "vehicle_id": {
+      "type": "string",
+      "description": "Vehicle this plan targets (e.g. UAV-1, GND-1)"
+    },
+    "vehicle_type": {
+      "type": "string",
+      "enum": ["multirotor", "rover"]
+    },
+    "commands": {
+      "type": "array",
+      "description": "Ordered PX4 MAV_CMD command sequence for this vehicle.",
+      "items": { "$ref": "#/definitions/MavCommand" }
+    }
+  },
+  "definitions": {
+    "MavCommand": {
+      "type": "object",
+      "required": ["seq", "mav_cmd", "mav_cmd_id"],
+      "additionalProperties": false,
+      "properties": {
+        "seq": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Zero-based sequence number within this vehicle's command list"
+        },
+        "mav_cmd": {
+          "type": "string",
+          "description": "Human-readable MAV_CMD name, e.g. MAV_CMD_NAV_WAYPOINT"
+        },
+        "mav_cmd_id": {
+          "type": "integer",
+          "description": "Numeric MAV_CMD ID as defined in the MAVLink spec"
+        },
+        "role": {
+          "type": ["string", "null"],
+          "description": "Semantic role from the originating Waypoint (survey, loiter, rtl, etc.)"
+        },
+        "lat": {
+          "type": ["number", "null"],
+          "minimum": -90,
+          "maximum": 90
+        },
+        "lon": {
+          "type": ["number", "null"],
+          "minimum": -180,
+          "maximum": 180
+        },
+        "alt_m": {
+          "type": ["number", "null"],
+          "description": "Target altitude in metres (AGL for multirotor; 0 for rovers)"
+        },
+        "param1": {
+          "type": ["number", "null"],
+          "description": "MAVLink param1 (meaning depends on mav_cmd_id)"
+        },
+        "param2": {
+          "type": ["number", "null"],
+          "description": "MAVLink param2"
+        },
+        "param3": {
+          "type": ["number", "null"],
+          "description": "MAVLink param3"
+        },
+        "param4": {
+          "type": ["number", "null"],
+          "description": "MAVLink param4"
+        }
+      }
+    }
+  }
+}
