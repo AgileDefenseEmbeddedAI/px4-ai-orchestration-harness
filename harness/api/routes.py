@@ -111,7 +111,13 @@ async def _dispatch_mission(
             val = build_val_from_mig(mig, vehicle)
 
             # Primary: ROS 2 transport
-            ros2_result = await ros2_dispatch(val)
+            fleet_entry = fleet_by_id.get(vehicle.id, {})
+            ros2_result = await ros2_dispatch(
+                val,
+                mission_id=mission_id,
+                namespace=fleet_entry.get("ros2_namespace", ""),
+                authorized=True,
+            )
             audit_module.log_event(
                 mission_id,
                 "ros2_dispatch",
@@ -119,7 +125,6 @@ async def _dispatch_mission(
             )
 
             # Secondary: MAVLink 2 transport
-            fleet_entry = fleet_by_id.get(vehicle.id, {})
             connection = fleet_entry.get("mavlink_connection", "udp:127.0.0.1:14540")
             mavlink_result = await mavlink_dispatch(val, connection)
             audit_module.log_event(

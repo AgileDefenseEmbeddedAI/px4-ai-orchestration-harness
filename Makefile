@@ -1,13 +1,16 @@
-.PHONY: dev test install lint audit-scan check-config help
+.PHONY: dev test install lint audit-scan check-config sitl-up sitl-down e2e-ros2 help
 
 help:
 	@echo "PX4 AI Orchestration Harness — available targets:"
 	@echo "  install      Install Python dependencies"
 	@echo "  dev          Start FastAPI development server (port 8000)"
-	@echo "  test         Run pytest suite"
+	@echo "  test         Run pytest suite (no SITL required)"
 	@echo "  lint         Syntax-check core Python modules"
 	@echo "  audit-scan   Run pip-licenses (fails on GPL/LGPL deps)"
 	@echo "  check-config Verify config/model.yaml exists"
+	@echo "  sitl-up      Start multirotor + rover SITL instances in background"
+	@echo "  sitl-down    Stop all SITL instances"
+	@echo "  e2e-ros2     Full intent→plan→validate→authorize→dispatch against SITL"
 
 install:
 	pip install -r requirements.txt
@@ -43,3 +46,26 @@ lint:
 
 audit-scan:
 	pip-licenses --format=markdown --fail-on="GPL;LGPL" || true
+
+# ---------------------------------------------------------------------------
+# SITL targets (require PX4-Autopilot + Gazebo Garden installed)
+# ---------------------------------------------------------------------------
+
+sitl-up:
+	@echo "[sitl-up] Launching SITL instances in background ..."
+	@bash scripts/launch_sitl.sh &
+	@echo "[sitl-up] SITL started. Use 'make sitl-down' to stop."
+	@echo "[sitl-up] Verify with: ros2 topic list | grep '/px4_'"
+
+sitl-down:
+	@echo "[sitl-down] Stopping all PX4 SITL processes ..."
+	@pkill -f "px4 -i" 2>/dev/null || true
+	@pkill -f "px4_sitl" 2>/dev/null || true
+	@echo "[sitl-down] Done."
+
+# Runs the full scenario against live SITL.
+# Skips automatically when SITL is not available (no ROS 2 topics visible).
+e2e-ros2: check-config
+	@echo "[e2e-ros2] Running full intent→plan→validate→authorize→dispatch cycle ..."
+	@echo "[e2e-ros2] (SITL not detected → mock tests will run; live tests skipped)"
+	pytest tests/test_ros2_transport.py -v --tb=short
