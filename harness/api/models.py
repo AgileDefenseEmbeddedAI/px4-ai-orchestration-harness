@@ -51,6 +51,7 @@ class VAL(BaseModel):
     vehicle_id: str
     vehicle_type: VehicleType
     actions: list[VehicleAction] = Field(default_factory=list)
+    contingency_ladder: Optional[list[dict]] = None
 
 
 # ---------------------------------------------------------------------------

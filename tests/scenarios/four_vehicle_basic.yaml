@@ -1,0 +1,146 @@
+# Scenario: four_vehicle_basic
+# Purpose:  Verify that ROS 2 dispatch generates the correct VehicleCommand sequence
+#           for a heterogeneous four-vehicle fleet (2× multirotor, 2× rover).
+# Coverage: REQ-DSP-01, REQ-SIM-01
+
+intent: >
+  Scout the Alpha grid with two UAVs covering the northern sectors while two
+  rovers secure the southern perimeter and return to base when complete.
+
+# Expected plan structure after decomposition + validation
+expected_plan:
+  vehicle_count: 4
+
+  vehicles:
+    - id: UAV-1
+      vehicle_type: multirotor
+      sitl_target: gz_x500
+      mavlink_sysid: 1
+      ros2_namespace: /px4_1
+      mavlink_connection: "udp:127.0.0.1:14540"
+      waypoints: [WP-UAV1-1, WP-UAV1-2, WP-UAV1-RTL]
+
+    - id: UAV-2
+      vehicle_type: multirotor
+      sitl_target: gz_x500
+      mavlink_sysid: 3
+      ros2_namespace: /px4_3
+      mavlink_connection: "udp:127.0.0.1:14542"
+      waypoints: [WP-UAV2-1, WP-UAV2-2, WP-UAV2-RTL]
+
+    - id: GND-1
+      vehicle_type: rover
+      sitl_target: gz_rover_ackermann
+      mavlink_sysid: 2
+      ros2_namespace: /px4_2
+      mavlink_connection: "udp:127.0.0.1:14541"
+      waypoints: [WP-GND1-1, WP-GND1-2, WP-GND1-RTL]
+
+    - id: GND-2
+      vehicle_type: rover
+      sitl_target: gz_rover_ackermann
+      mavlink_sysid: 4
+      ros2_namespace: /px4_4
+      mavlink_connection: "udp:127.0.0.1:14543"
+      waypoints: [WP-GND2-1, WP-GND2-2, WP-GND2-RTL]
+
+  waypoints:
+    # UAV-1 — NW quadrant survey (within Fort Bragg geofence)
+    - id: WP-UAV1-1
+      lat: 35.1580
+      lon: -79.0400
+      alt_m: 60.0
+      role: survey
+    - id: WP-UAV1-2
+      lat: 35.1620
+      lon: -79.0350
+      alt_m: 60.0
+      role: loiter
+    - id: WP-UAV1-RTL
+      lat: 35.1400
+      lon: -79.0110
+      alt_m: 30.0
+      role: rtl
+
+    # UAV-2 — NE quadrant survey
+    - id: WP-UAV2-1
+      lat: 35.1580
+      lon: -79.0050
+      alt_m: 60.0
+      role: survey
+    - id: WP-UAV2-2
+      lat: 35.1620
+      lon: -79.0000
+      alt_m: 60.0
+      role: loiter
+    - id: WP-UAV2-RTL
+      lat: 35.1400
+      lon: -79.0110
+      alt_m: 30.0
+      role: rtl
+
+    # GND-1 — SW perimeter (alt_m=0.0 for rover)
+    - id: WP-GND1-1
+      lat: 35.1280
+      lon: -79.0400
+      alt_m: 0.0
+      role: perimeter
+    - id: WP-GND1-2
+      lat: 35.1300
+      lon: -79.0350
+      alt_m: 0.0
+      role: perimeter
+    - id: WP-GND1-RTL
+      lat: 35.1400
+      lon: -79.0110
+      alt_m: 0.0
+      role: rtl
+
+    # GND-2 — SE perimeter
+    - id: WP-GND2-1
+      lat: 35.1280
+      lon: -79.0050
+      alt_m: 0.0
+      role: perimeter
+    - id: WP-GND2-2
+      lat: 35.1300
+      lon: -79.0000
+      alt_m: 0.0
+      role: perimeter
+    - id: WP-GND2-RTL
+      lat: 35.1400
+      lon: -79.0110
+      alt_m: 0.0
+      role: rtl
+
+# Expected VehicleCommand MAV_CMD sequence per vehicle
+# MAV_CMD_NAV_WAYPOINT=16, MAV_CMD_NAV_RETURN_TO_LAUNCH=20
+expected_dispatch:
+  UAV-1:
+    - command: 16
+      role: survey
+    - command: 16
+      role: loiter
+    - command: 20
+      role: rtl
+  UAV-2:
+    - command: 16
+      role: survey
+    - command: 16
+      role: loiter
+    - command: 20
+      role: rtl
+  GND-1:
+    - command: 16
+      role: perimeter
+    - command: 16
+      role: perimeter
+    - command: 20
+      role: rtl
+  GND-2:
+    - command: 16
+      role: perimeter
+    - command: 16
+      role: perimeter
+    - command: 20
+      role: rtl
