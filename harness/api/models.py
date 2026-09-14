@@ -64,6 +64,8 @@ class Waypoint(BaseModel):
     lon: float
     alt_m: float
     role: str  # e.g. "survey", "loiter", "perimeter", "rtl"
+    t_s: Optional[float] = None  # seconds from mission start (for timing/deconfliction checks)
+    mav_cmd: Optional[str] = None  # MAVLink command type (e.g. MAV_CMD_NAV_TAKEOFF)
 
 
 class Vehicle(BaseModel):
@@ -115,3 +117,4 @@ class MissionResponse(BaseModel):
     validation_errors: list[str] = Field(default_factory=list)
     authorized_at: Optional[datetime] = None
     authorized_by: Optional[str] = None
+    verdict: Optional[dict] = None
