@@ -1,0 +1,194 @@
+/* =========================================================================
+   Agile Defense — Colors & Type
+   Extracted from Figma (file: hTaNhoLLA0ohAzc3bX66RE)
+   Viewport reference: 1728px (MacBook Pro 16")
+   ========================================================================= */
+
+/* --- Webfonts -----------------------------------------------------------
+   The brand uses Helvetica Neue as its primary face. We fall back through
+   the Helvetica/Arial stack; Inter is the designated secondary face for
+   interface contexts where Helvetica Neue isn't available.
+   (If you need a 1:1 web substitute, ship Helvetica Neue locally.)
+   ---------------------------------------------------------------------- */
+
+:root {
+  /* ----- BRAND COLORS -------------------------------------------------- */
+  --color-red-primary:    #d23c3a;   /* Primary accent — CTAs, stat callouts, active states */
+  --color-red-dark:       #c24841;   /* Nav CTA button, deeper reds */
+  --color-red-bright:     #ff5a58;   /* Active sidebar text on dark */
+
+  /* ----- NAVY / BLUE PALETTE ------------------------------------------ */
+  --color-navy-deepest:   #061033;   /* Page background on dark */
+  --color-navy-deep:      #0b2451;   /* Card background on dark, primary text on light */
+  --color-navy-mid:       #1f3864;   /* Featured card gradient top */
+  --color-blue-primary:   #4386c3;   /* Mid-blue stat accent */
+  --color-blue-light:     #a9d8fb;   /* Light-blue stat accent, demo labels */
+  --color-blue-vivid:     #0092ff;   /* Light-theme stat accent */
+
+  /* ----- ACCENT -------------------------------------------------------- */
+  --color-orange:         #efb16a;   /* Orange stat accent */
+
+  /* ----- NEUTRALS ------------------------------------------------------ */
+  --color-white:          #ffffff;
+  --color-black:          #000000;
+
+  /* ----- SEMANTIC — DARK THEME (default) ------------------------------ */
+  --bg-page:              var(--color-navy-deepest);
+  --bg-card:              var(--color-navy-deep);
+  --bg-card-featured:     var(--color-navy-mid);
+  --bg-nav:               var(--color-black);
+  --fg-primary:           var(--color-white);
+  --fg-muted:             rgba(255, 255, 255, 0.7);
+  --fg-accent:            var(--color-red-primary);
+  --border-subtle:        rgba(255, 255, 255, 0.1);
+
+  /* ----- TYPE FACES ---------------------------------------------------- */
+  --font-primary:         'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-secondary:       'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  /* ----- TYPE SCALE (in px — viewport is fixed 1728) ------------------ */
+  --text-hero:            124.88px;  /* Hero accent text ("Always") */
+  --text-display:         96px;      /* Stat banner values, large display */
+  --text-h1:              64px;      /* Section headings */
+  --text-h2:              40px;      /* Sub-section headings */
+  --text-h3:              32px;      /* Card titles, stat labels */
+  --text-h4:              24px;      /* Subtitles, section labels */
+  --text-sidebar:         20px;      /* Sidebar nav items */
+  --text-body:            17px;      /* Body, descriptions */
+  --text-nav:             14px;      /* Navbar links, button labels */
+
+  /* ----- WEIGHTS ------------------------------------------------------- */
+  --weight-regular:       400;
+  --weight-medium:        500;
+  --weight-bold:          700;
+  --weight-extrabold:     800;
+
+  /* ----- LINE HEIGHTS -------------------------------------------------- */
+  --lh-tight:             1.2;   /* @kind other */
+  --lh-normal:            1.4;   /* @kind other */
+  --lh-relaxed:           1.65;  /* @kind other */
+
+  /* ----- SPACING (from Figma layout gaps) ----------------------------- */
+  --space-xs:             8px;
+  --space-sm:             16px;
+  --space-md:             24px;
+  --space-lg:             32px;
+  --space-xl:             48px;
+  --space-2xl:            64px;
+  --space-3xl:            96px;
+  --space-4xl:            120px;
+
+  /* ----- LAYOUT -------------------------------------------------------- */
+  --viewport-width:       1728px;
+  --content-max:          1488px;
+  --content-narrow:       726px;
+  --sidebar-width:        573px;
+  --detail-panel-width:   771px;
+
+  /* ----- COMPONENT SIZES ---------------------------------------------- */
+  --nav-height:           45px;
+  --button-height:        45px;
+  --icon-lg:              48px;
+  --icon-md:              32px;
+  --icon-sm:              24px;
+  --icon-xs:              20px;
+
+  /* ----- RADIUS (very minimal — system is mostly square edges) -------- */
+  --radius-none:          0;
+  --radius-sm:            4px;
+  --radius-md:            8px;
+}
+
+/* ----- LIGHT THEME OVERRIDES --------------------------------------------
+   Light sections invert the page canvas to white but keep navy cards.
+   ---------------------------------------------------------------------- */
+.theme-light {
+  --bg-page:              var(--color-white);
+  --bg-card:              var(--color-navy-deep);   /* cards stay navy */
+  --fg-primary:           var(--color-navy-deep);
+  --fg-muted:             rgba(11, 36, 81, 0.7);
+  --border-subtle:        rgba(0, 0, 0, 0.1);
+}
+
+/* =========================================================================
+   SEMANTIC TYPE CLASSES
+   Use these instead of raw font-size where possible.
+   ========================================================================= */
+.t-hero {
+  font-family: var(--font-primary);
+  font-size: var(--text-hero);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-tight);
+  color: var(--color-red-dark);
+}
+
+.t-display {
+  font-family: var(--font-primary);
+  font-size: var(--text-display);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-tight);
+}
+
+.t-h1 {
+  font-family: var(--font-primary);
+  font-size: var(--text-h1);
+  font-weight: var(--weight-bold);
+  line-height: var(--lh-tight);
+}
+
+.t-h2 {
+  font-family: var(--font-primary);
+  font-size: var(--text-h2);
+  font-weight: var(--weight-bold);
+  line-height: var(--lh-tight);
+}
+
+.t-h3 {
+  font-family: var(--font-primary);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-tight);
+}
+
+.t-h4 {
+  font-family: var(--font-primary);
+  font-size: var(--text-h4);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-tight);
+}
+
+.t-sidebar {
+  font-family: var(--font-primary);
+  font-size: var(--text-sidebar);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-normal);
+}
+
+.t-body {
+  font-family: var(--font-primary);
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+  line-height: var(--lh-relaxed);
+}
+
+.t-nav {
+  font-family: var(--font-primary);
+  font-size: var(--text-nav);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+
+/* Section-header subtitle / eyebrow, exactly as used in Figma */
+.t-eyebrow {
+  font-family: var(--font-primary);
+  font-size: var(--text-h4);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-tight);
+  color: var(--fg-primary);
+}
+
+/* Red accent for headings (e.g. "Mission Impact", "Always") */
+.t-heading-red {
+  color: var(--color-red-primary);
+}

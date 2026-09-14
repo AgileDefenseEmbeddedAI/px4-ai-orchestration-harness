@@ -1,0 +1,81 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Allow only one concurrent deployment; don't cancel an in-progress one so a finished
+# build always publishes.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          # No-op on the first deploy (the agent hasn't committed a lockfile yet);
+          # every rebuild after that restores node_modules from cache instead of
+          # re-resolving the dependency tree.
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      - name: Build and resolve the directory to publish
+        id: prep
+        run: |
+          set -e
+          publish=""
+          # 1. Node project with a build script -> build it, then find the output dir.
+          if [ -f package.json ] && grep -q '"build"' package.json; then
+            if [ -f package-lock.json ]; then npm ci; else npm install; fi
+            npm run build
+            for d in dist build out public .output/public; do
+              if [ -d "$d" ]; then publish="$d"; break; fi
+            done
+          fi
+          # 2. Otherwise publish an existing static directory containing an index.html.
+          if [ -z "$publish" ]; then
+            for d in dist build out site public docs .; do
+              if [ -f "$d/index.html" ]; then publish="$d"; break; fi
+            done
+          fi
+          # 3. Nothing servable -> generate a landing page from the README so the deploy
+          #    never fails and the Pages URL always resolves to something.
+          if [ -z "$publish" ]; then
+            mkdir -p _site
+            {
+              printf '<!doctype html><meta charset="utf-8"><title>%s</title>' "$GITHUB_REPOSITORY"
+              printf '<pre style="font:14px/1.6 ui-monospace,SFMono-Regular,monospace;max-width:48rem;margin:3rem auto;padding:0 1rem;white-space:pre-wrap">'
+              if [ -f README.md ]; then
+                sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' README.md
+              else
+                printf '%s' "$GITHUB_REPOSITORY"
+              fi
+              printf '</pre>'
+            } > _site/index.html
+            publish="_site"
+          fi
+          echo "publish_dir=$publish" >> "$GITHUB_OUTPUT"
+          echo "Publishing directory: $publish"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ steps.prep.outputs.publish_dir }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

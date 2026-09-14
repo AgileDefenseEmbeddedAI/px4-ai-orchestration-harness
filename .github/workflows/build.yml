@@ -1,0 +1,65 @@
+name: Claude Code — primary prototype build
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: primary-build
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # The agent runs `npm install` itself inside its own session, so setup-node's
+      # cache never sees it. Warm the npm download cache directly instead — the
+      # hashFiles key is empty on a repo with no lockfile yet, and restore-keys
+      # still pulls the most recent cache for the runner.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            You are building the first, foundational version of this prototype. Read
+            CLAUDE.md and the PRD it links FIRST, then build as much of the product as
+            you reasonably can in a single pass, within the scope CLAUDE.md defines —
+            it tells you what already exists in this repo and which files are yours to
+            change. Do not rebuild what is already there. Favor a working, runnable
+            slice over breadth.
+
+            This repo ships the Agile Defense design system as a Claude Code skill at
+            `.claude/skills/agile-defense-design/`. Before building any UI, read that
+            skill's SKILL.md and README.md and apply the brand to everything you build:
+            import its `colors_and_type.css` tokens, reuse the patterns in
+            `reference/component-library.html` and `ui_kits/`, and honor the hard rules
+            (deep navy canvases, single red accent, Helvetica Neue, sharp corners, no
+            shadows, no emoji). The prototype must look on-brand, not generic.
+
+            This repo auto-deploys to GitHub Pages on every push (see the "Live
+            deployment" section of CLAUDE.md), so give the prototype a web-servable
+            front end: either a `build` script that emits static files into dist/build/
+            out/public, or a static index.html at the repo root or in public/. That makes
+            the live site show the actual product rather than just the README.
+
+            Commit your work directly to the default branch — do NOT open a pull
+            request. Keep the project runnable and document the install/run commands in
+            the README under a "Running" section. The "Planned follow-on work" listed in
+            CLAUDE.md will be filed as issues AFTER you finish and built on top of what
+            you commit here, so leave the default branch clean and working, and don't
+            try to do that follow-on work yourself.
+          # bypassPermissions: the action runs unattended — there is no human to approve
+          # tool calls, so the default agent policy denies every file write and git
+          # command. Repos are private, throwaway prototypes, so full autonomy is safe.
+          claude_args: "--permission-mode bypassPermissions --model claude-sonnet-4-6 --max-turns 100"

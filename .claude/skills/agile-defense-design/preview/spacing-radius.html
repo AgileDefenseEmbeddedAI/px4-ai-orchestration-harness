@@ -1,0 +1,21 @@
+<!doctype html>
+<!-- @dsCard group="Spacing" name="Spacing — Radius" subtitle="Corners are sharp; 4/8 px reserved" viewport="700x200" -->
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;padding:0;background:#061033;color:#fff;font-family:var(--font-primary);}
+  .wrap{padding:32px;display:flex;gap:32px;align-items:center;justify-content:center;}
+  .corner{width:120px;height:120px;background:#0b2451;display:flex;align-items:flex-end;justify-content:flex-start;padding:12px;font-size:12px;font-family:ui-monospace,Menlo,monospace;color:rgba(255,255,255,.7);}
+  .corner .name{font-family:var(--font-primary);font-weight:700;font-size:13px;color:#fff;display:block;margin-bottom:2px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="corner"><div><span class="name">None</span>0 px</div></div>
+  <div class="corner" style="border-radius:4px"><div><span class="name">sm</span>4 px</div></div>
+  <div class="corner" style="border-radius:8px"><div><span class="name">md</span>8 px</div></div>
+</div>
+</body>
+</html>

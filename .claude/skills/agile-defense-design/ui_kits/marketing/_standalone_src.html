@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Agile Defense — Marketing Site</title>
+<link rel="stylesheet" href="../shared.css">
+
+<meta name="ext-resource-dependency" content="../../assets/logo.svg" data-resource-id="logo" />
+<meta name="ext-resource-dependency" content="../../assets/hero-image.jpg" data-resource-id="heroImg" />
+<meta name="ext-resource-dependency" content="../../assets/culture-image.jpg" data-resource-id="cultureImg" />
+<meta name="ext-resource-dependency" content="../../assets/icon-digital-transformation.svg" data-resource-id="iconDigital" />
+<meta name="ext-resource-dependency" content="../../assets/icon-data-analytics.svg" data-resource-id="iconData" />
+<meta name="ext-resource-dependency" content="../../assets/icon-cyber.svg" data-resource-id="iconCyber" />
+
+<template id="__bundler_thumbnail" data-bg-color="#061033">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#061033"/>
+    <path d="M600 290 L690 510 L510 510 Z" fill="#d23c3a"/>
+    <rect x="470" y="540" width="260" height="14" fill="#ffffff" opacity="0.9"/>
+  </svg>
+</template>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const R = window.__resources;
+
+/* ---- Header ---- */
+function Navbar() {
+  const items = [
+    { label: 'Company', caret: true },
+    { label: 'Capabilities', caret: true },
+    { label: 'Agile Labs', caret: true },
+    { label: 'Careers' },
+    { label: 'News' },
+    { label: 'Events' },
+  ];
+  return (
+    <nav className="ad-nav">
+      <img className="ad-nav__logo" src={R.logo} alt="Agile Defense" />
+      <ul className="ad-nav__links">
+        {items.map(it => (
+          <li key={it.label}
+              className={`ad-nav__item ${it.caret ? 'ad-nav__item--has-caret' : ''}`}>
+            {it.label}
+          </li>
+        ))}
+        <li><a className="ad-nav__cta">Contact</a></li>
+      </ul>
+    </nav>
+  );
+}
+
+function Hero() {
+  return (
+    <section style={{
+      position: 'relative', height: 760, overflow: 'hidden',
+      display: 'flex', alignItems: 'flex-end',
+    }}>
+      <img src={R.heroImg}
+           style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }} />
+      <div style={{
+        position:'absolute', inset:0,
+        background: 'linear-gradient(180deg, rgba(6,16,51,.15) 0%, rgba(6,16,51,.85) 100%)',
+      }} />
+      <div style={{ position:'relative', padding: '0 120px 96px', width: '100%' }}>
+        <h1 className="ad-hero-word">
+          <span className="ad-red-dark" style={{ fontWeight: 700 }}>Always </span>
+          <span style={{ fontWeight: 500 }}>Evolving</span>
+        </h1>
+        <p className="ad-body" style={{ maxWidth: 640, marginTop: 32, fontSize: 20 }}>
+          Agile Defense stands at the forefront of innovation, driving advanced
+          capabilities and solutions tailored to the most critical national
+          security and civilian missions.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+/* ---- Capabilities ---- */
+function PurposeSection() {
+  return (
+    <section style={{ padding: '120px 120px 64px' }}>
+      <div style={{ maxWidth: 920 }}>
+        <h2 className="ad-h1">
+          <span style={{ fontWeight: 700 }}>Purpose-Driven </span>
+          <span style={{ fontWeight: 500 }}>Solutions</span>
+        </h2>
+        <p className="ad-body" style={{ maxWidth: 760, marginTop: 24 }}>
+          At Agile Defense, we understand that outcomes are shaped by decisive
+          actions, and emerging challenges demand innovative responses. Guided
+          by a vision of the future, we navigate change with unwavering
+          determination, forging pathways toward what lies ahead.
+        </p>
+        <p className="ad-body" style={{ maxWidth: 760, marginTop: 20 }}>
+          Whether developing specialized solutions, contextualizing data, or
+          strengthening cybersecurity, our expertise is instrumental in
+          safeguarding our nation's sensitive assets.
+        </p>
+        <a className="ad-btn ad-btn--primary" style={{ marginTop: 40 }}>
+          <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="white" strokeWidth="1.5"/></svg>
+          LEARN MORE
+        </a>
+      </div>
+    </section>
+  );
+}
+
+function CapabilityCards() {
+  const cards = [
+    { icon: R.iconDigital, title: 'Digital Transformation',
+      desc: 'Applying advanced services, capabilities, and solutions securely to enhance mission operations and achieve optimal outcomes.', featured: true },
+    { icon: R.iconData, title: 'Data Analytics',
+      desc: 'Leveraging a data-driven approach, we deliver data insights that provide clarity to accelerate the decision-making process.' },
+    { icon: R.iconCyber, title: 'Cyber',
+      desc: 'Delivering Cyber Systems and Cyber Operations capabilities to defend against advanced and emerging cyber threats with certainty.' },
+  ];
+  return (
+    <section style={{ padding: '64px 120px 120px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+        {cards.map(c => (
+          <div key={c.title}
+               className={`ad-card ad-card--tall ${c.featured ? 'ad-card--featured' : ''}`}>
+            <div className="ad-card__icon"><img src={c.icon} style={{width:'100%',height:'100%'}}/></div>
+            <div style={{ marginTop: 'auto' }}>
+              <div className="ad-card__title">{c.title}</div>
+              <div className="ad-card__desc">{c.desc}</div>
+              <a className="ad-btn ad-btn--secondary" style={{ marginTop: 32, color: '#fff' }}>
+                LEARN MORE
+                <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="white" strokeWidth="1.5"/></svg>
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function CultureSection() {
+  return (
+    <section style={{ position: 'relative', height: 620, overflow: 'hidden' }}>
+      <img src={R.cultureImg}
+           style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }} />
+      <div style={{
+        position:'absolute', inset:0,
+        background:'linear-gradient(90deg, rgba(6,16,51,.9) 0%, rgba(6,16,51,.4) 60%, transparent 100%)',
+      }} />
+      <div style={{ position:'relative', padding:'120px', maxWidth: 900 }}>
+        <h2 className="ad-h1" style={{ lineHeight: 1.05 }}>
+          <span style={{ fontWeight: 700 }}>A Culture of </span>
+          <span style={{ fontWeight: 500 }}>Innovation</span>
+        </h2>
+        <p className="ad-body" style={{ maxWidth: 520, marginTop: 24 }}>
+          With a deep commitment to exploring new ideas and technologies, we
+          invest in advancing the state of practice in every part of our
+          organization.
+        </p>
+        <a className="ad-btn ad-btn--primary" style={{ marginTop: 40 }}>JOIN OUR TEAM</a>
+      </div>
+    </section>
+  );
+}
+
+/* ---- CTA + Footer ---- */
+function AgileLabsSection() {
+  return (
+    <section style={{ padding: '120px', background: '#061033', position: 'relative' }}>
+      <div style={{ maxWidth: 920 }}>
+        <h2 className="ad-h1">
+          <span className="ad-red-dark" style={{ fontWeight: 700 }}>Agile </span>
+          <span style={{ fontWeight: 500 }}>Labs</span>
+        </h2>
+        <p className="ad-body" style={{ maxWidth: 680, marginTop: 24 }}>
+          Specialized staff and facilities that stretch the limits of
+          innovation, utilizing the latest technologies and innovative
+          solutions to revolutionize customer missions.
+        </p>
+        <a className="ad-btn ad-btn--primary" style={{ marginTop: 40 }}>
+          <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="white" strokeWidth="1.5"/></svg>
+          LEARN MORE
+        </a>
+      </div>
+    </section>
+  );
+}
+
+function FinalCTA() {
+  return (
+    <section style={{ padding: '120px', background: '#061033' }}>
+      <div style={{ maxWidth: 1157 }}>
+        <h2 className="ad-h1" style={{ fontSize: 96, fontWeight: 500, lineHeight: 1.05 }}>
+          <span style={{ fontWeight: 700 }}>Advancing </span>
+          <span>Together</span>
+        </h2>
+        <p className="ad-body" style={{ maxWidth: 540, marginTop: 32 }}>
+          We listen carefully and collaborate closely to understand your
+          challenges and build for what comes next. If you're ready to explore
+          new solutions, we would love to hear from you.
+        </p>
+        <a className="ad-btn ad-btn--primary" style={{ marginTop: 40 }}>
+          <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="white" strokeWidth="1.5"/></svg>
+          GET STARTED
+        </a>
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer style={{ background: '#000', padding: '64px 120px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <div>
+        <img src={R.logo} style={{ height: 48 }} />
+        <p style={{ fontSize: 17, marginTop: 24, maxWidth: 380, lineHeight: 1.5 }}>
+          Agile Defense delivers advanced capabilities and solutions tailored
+          to the most critical national security and civilian missions.
+        </p>
+      </div>
+      <ul style={{ display: 'flex', gap: 32, listStyle: 'none', fontSize: 14, fontWeight: 500, letterSpacing: '.02em' }}>
+        {['COMPANY','CAPABILITIES','NEWS','CAREERS','CONTACT'].map(l => <li key={l}>{l}</li>)}
+      </ul>
+      <div style={{ fontSize: 13, color: 'rgba(255,255,255,.5)' }}>
+        Copyright 2026 · All rights reserved.
+      </div>
+    </footer>
+  );
+}
+
+function App() {
+  return (
+    <div className="ad-page">
+      <Navbar />
+      <Hero />
+      <PurposeSection />
+      <CapabilityCards />
+      <CultureSection />
+      <AgileLabsSection />
+      <FinalCTA />
+      <Footer />
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

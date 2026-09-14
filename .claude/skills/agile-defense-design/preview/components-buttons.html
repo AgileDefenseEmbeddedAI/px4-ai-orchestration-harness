@@ -1,0 +1,32 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components — Buttons" subtitle="Primary, dark-red nav CTA, secondary" viewport="700x130" -->
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;padding:0;background:#061033;font-family:var(--font-primary);}
+  .wrap{padding:32px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
+  .btn{height:45px;padding:0 24px;display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:#fff;text-decoration:none;cursor:pointer;border:none;white-space:nowrap;letter-spacing:.02em;font-family:inherit;}
+  .btn-primary{background:#d23c3a;}
+  .btn-dark{background:#c24841;}
+  .btn-secondary{background:transparent;color:#fff;}
+  .btn svg{width:14px;height:14px;}
+  .label{font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:#a9d8fb;font-weight:700;width:100%;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="label">Buttons · 45 px height · 14/500 Helvetica Neue</div>
+  <a class="btn btn-primary">
+    <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="white" stroke-width="1.5"/></svg>
+    EXPLORE THE 5 LAYERS
+  </a>
+  <a class="btn btn-dark">CONTACT</a>
+  <a class="btn btn-secondary">
+    <svg viewBox="0 0 16 16"><polygon points="6,3 13,8 6,13" fill="white"/></svg>
+    WATCH DEMO
+  </a>
+</div>
+</body>
+</html>

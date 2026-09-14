@@ -1,0 +1,37 @@
+<!doctype html>
+<!-- @dsCard group="Colors" name="Colors — Accents & Neutrals" subtitle="Stat accent palette and base neutrals" viewport="700x300" -->
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;padding:0;background:var(--bg-page);color:var(--fg-primary);font-family:var(--font-primary);}
+  .wrap{padding:32px;display:flex;flex-direction:column;gap:24px;}
+  .row{display:flex;gap:16px;flex-wrap:wrap;}
+  .swatch{
+    width:140px;height:110px;display:flex;flex-direction:column;justify-content:flex-end;
+    padding:12px;color:#fff;font-size:12px;line-height:1.3;
+  }
+  .swatch.dark{color:#061033;}
+  .swatch .name{font-weight:700;font-size:13px;}
+  .swatch .hex{opacity:.85;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.02em;}
+  .group-label{font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--color-blue-light);font-weight:700;margin-bottom:-8px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="group-label">Stat accents</div>
+  <div class="row">
+    <div class="swatch dark" style="background:#a9d8fb"><div class="name">Blue Light</div><div class="hex">#A9D8FB</div></div>
+    <div class="swatch dark" style="background:#efb16a"><div class="name">Orange</div><div class="hex">#EFB16A</div></div>
+    <div class="swatch" style="background:#4386c3"><div class="name">Blue Mid</div><div class="hex">#4386C3</div></div>
+    <div class="swatch" style="background:#0092ff"><div class="name">Blue Vivid</div><div class="hex">#0092FF</div></div>
+  </div>
+  <div class="group-label">Neutrals</div>
+  <div class="row">
+    <div class="swatch dark" style="background:#ffffff;border:1px solid #e5e5e5"><div class="name">White</div><div class="hex">#FFFFFF</div></div>
+    <div class="swatch" style="background:#000000"><div class="name">Black</div><div class="hex">#000000</div></div>
+  </div>
+</div>
+</body>
+</html>

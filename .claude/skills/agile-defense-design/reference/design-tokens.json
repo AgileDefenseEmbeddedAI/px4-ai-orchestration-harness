@@ -1,0 +1,168 @@
+{
+  "designSystem": "Agile Defense",
+  "source": "Figma file hTaNhoLLA0ohAzc3bX66RE",
+  "viewport": "1728px (MacBook Pro 16\")",
+  "themes": ["dark", "light"],
+
+  "colors": {
+    "brand": {
+      "red-primary": "#d23c3a",
+      "red-dark": "#c24841",
+      "red-bright": "#ff5a58"
+    },
+    "navy": {
+      "deepest": "#061033",
+      "deep": "#0b2451",
+      "mid": "#1f3864"
+    },
+    "blue": {
+      "primary": "#4386c3",
+      "light": "#a9d8fb",
+      "vivid": "#0092ff"
+    },
+    "accent": {
+      "orange": "#efb16a"
+    },
+    "neutral": {
+      "white": "#ffffff",
+      "black": "#000000"
+    }
+  },
+
+  "backgrounds": {
+    "dark": {
+      "page": "#061033",
+      "card": "#0b2451",
+      "cardFeatured": "#1f3864 (gradient to #061033)",
+      "nav": "#000000"
+    },
+    "light": {
+      "page": "#ffffff",
+      "card": "#0b2451"
+    }
+  },
+
+  "typography": {
+    "fontFamily": "Helvetica Neue, Helvetica, Arial, sans-serif",
+    "fontFamilySecondary": "Inter, sans-serif",
+    "scale": {
+      "hero":       { "size": "124.88px", "weight": 500, "use": "Hero accent text (e.g. 'Always')" },
+      "display":    { "size": "96px",     "weight": 500, "use": "Large display headings, stat banner values" },
+      "h1":         { "size": "64px",     "weight": 700, "use": "Section headings (Mission Impact, DISA's CBII Reality)" },
+      "h2":         { "size": "40px",     "weight": 700, "use": "Sub-section headings (We Fix the Problems)" },
+      "h3":         { "size": "32px",     "weight": 500, "use": "Card titles, stat labels, detail section titles" },
+      "h4":         { "size": "24px",     "weight": 500, "use": "Subtitles, section labels, banner descriptions" },
+      "sidebar":    { "size": "20px",     "weight": 500, "use": "Sidebar navigation items (700 when active)" },
+      "body":       { "size": "17px",     "weight": 400, "use": "Body text, card descriptions, detail content" },
+      "nav":        { "size": "14px",     "weight": 500, "use": "Navigation links, button labels" }
+    }
+  },
+
+  "spacing": {
+    "xs": "8px",
+    "sm": "16px",
+    "md": "24px",
+    "lg": "32px",
+    "xl": "48px",
+    "2xl": "64px",
+    "3xl": "96px",
+    "4xl": "120px"
+  },
+
+  "layout": {
+    "viewportWidth": "1728px",
+    "contentMax": "1488px",
+    "contentNarrow": "726px",
+    "sidebarWidth": "573px",
+    "detailPanelWidth": "771px"
+  },
+
+  "components": {
+    "navbar": {
+      "height": "45px",
+      "logoSize": "227x94px",
+      "logoSmall": "116x48px",
+      "font": "14px/500",
+      "ctaBackground": "#c24841",
+      "dropdownIndicator": "12x6px white chevron"
+    },
+    "buttons": {
+      "height": "45px",
+      "font": "14px/500",
+      "iconSize": "16x16px",
+      "primary": { "bg": "#d23c3a", "text": "#ffffff" },
+      "secondary": { "bg": "transparent", "textDark": "#0b2451", "textLight": "#ffffff" }
+    },
+    "featureCards": {
+      "variants": {
+        "tall":    { "height": "590px", "iconSize": "48px", "cols": 3, "width": "~538px each" },
+        "compact": { "height": "372px", "iconSize": "32px", "cols": 3, "width": "~476px each" },
+        "small":   { "height": "280px", "iconSize": "32px", "cols": 2, "width": "~420px each" },
+        "problem": { "height": "400px", "iconSize": "48px", "cols": 3, "width": "~476px each" },
+        "wide":    { "height": "400px", "iconSize": "48px", "cols": 2, "width": "~729px each" }
+      },
+      "background": "#0b2451",
+      "featuredBackground": "gradient #1f3864 -> #061033 with image overlay",
+      "titleFont": "32px/500",
+      "bodyFont": "17px/400"
+    },
+    "statCards": {
+      "size": "354x206px",
+      "background": "#0b2451",
+      "valueFont": "64px/500",
+      "barHeight": "8px",
+      "labelFont": "32px/500",
+      "colorVariants": {
+        "blue": "#a9d8fb",
+        "orange": "#efb16a",
+        "midBlue": "#4386c3",
+        "red": "#d23c3a",
+        "vividBlue": "#0092ff (light theme)"
+      }
+    },
+    "statsBanner": {
+      "valueFont": "96px/700 #d23c3a",
+      "labelFont": "32px/400 #ffffff",
+      "descriptionFont": "24px/500 #ffffff"
+    },
+    "sidebarNav": {
+      "width": "573px",
+      "itemHeight": "48px",
+      "iconContainer": "48x48px",
+      "iconInner": "20x20px",
+      "textFont": "20px/500",
+      "activeState": {
+        "iconBg": "#d23c3a",
+        "iconSize": "24x24px",
+        "textWeight": 700,
+        "textColorDark": "#ff5a58",
+        "textColorLight": "#d23c3a"
+      }
+    },
+    "detailPanel": {
+      "width": "771px",
+      "background": "#0b2451",
+      "sections": ["Challenge", "Our Approach", "Result"],
+      "iconSize": "48x48px",
+      "titleFont": "32px/500",
+      "bodyFont": "17px/400",
+      "maxTextWidth": "627px"
+    },
+    "ctaSection": {
+      "maxWidth": "1157px",
+      "headingFont": "64px/500",
+      "bodyFont": "17px/400",
+      "bodyMaxWidth": "405px"
+    }
+  },
+
+  "pageTemplates": {
+    "hero": "Navbar + full-bleed background image + hero accent text + abstract vector decoration",
+    "sectionWithCards": "Section header (left) + 3-col feature cards (below or right)",
+    "splitLayout": "Section header (left ~607px) + card grid (right)",
+    "problemDetail": "Title bar + two-col: sidebar nav (573px) + detail panel (771px)",
+    "statsPage": "Section header + problem cards (3-col) + wide cards (2-col) + stat banner + stat cards (4-col)",
+    "ctaPage": "CTA section + abstract vector decoration background",
+    "imagePage": "Full-bleed image with optional logo overlay"
+  }
+}

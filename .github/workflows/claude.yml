@@ -1,0 +1,42 @@
+name: Claude Code — autonomous prototype build
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  implement:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # The agent runs `npm install` itself inside its own session, so setup-node's
+      # cache never sees it. Warm the npm download cache directly instead — the
+      # hashFiles key is empty on a repo with no lockfile yet, and restore-keys
+      # still pulls the most recent cache for the runner.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            A ticket has been filed as this GitHub issue. The repository already
+            contains a working foundation built by the primary build, so implement this
+            issue as an incremental change ON TOP of the current default branch,
+            following the tech stack and conventions in CLAUDE.md. Keep changes minimal
+            and runnable. When you are done, open a pull request whose body contains
+            "Closes #${{ github.event.issue.number }}". Do NOT merge the pull request —
+            a human reviews and merges it.
+          # 100 turns: each issue builds a full feature on top of the primary build's
+          # foundation (not one slice of an empty repo), and must still open a PR at the
+          # end — 30 turns left features unfinished and the run failed before the PR.
+          claude_args: "--permission-mode bypassPermissions --model claude-sonnet-4-6 --max-turns 100"

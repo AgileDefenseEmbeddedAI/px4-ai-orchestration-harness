@@ -1,0 +1,28 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components — Stat cards" subtitle="Four-up stat grid with color variants" viewport="700x200" -->
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;padding:0;background:#061033;font-family:var(--font-primary);color:#fff;}
+  .wrap{padding:24px;display:flex;gap:16px;}
+  .stat{background:#0b2451;flex:1;padding:24px 20px;display:flex;flex-direction:column;gap:12px;min-height:150px;justify-content:center;}
+  .value{font-size:44px;font-weight:500;line-height:1;}
+  .bar{height:6px;width:100%;}
+  .label{font-size:18px;font-weight:500;line-height:1.2;}
+  .blue .value,.blue .label{color:#a9d8fb;} .blue .bar{background:#a9d8fb;}
+  .orange .value,.orange .label{color:#efb16a;} .orange .bar{background:#efb16a;}
+  .mid .value,.mid .label{color:#4386c3;} .mid .bar{background:#4386c3;}
+  .red .value,.red .label{color:#d23c3a;} .red .bar{background:#d23c3a;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="stat blue"><div class="value">3.6M</div><div class="bar"></div><div class="label">Users Affected</div></div>
+  <div class="stat orange"><div class="value">847K</div><div class="bar"></div><div class="label">Daily Incidents</div></div>
+  <div class="stat mid"><div class="value">86%</div><div class="bar"></div><div class="label">Severity</div></div>
+  <div class="stat red"><div class="value">24%</div><div class="bar"></div><div class="label">Productivity Loss</div></div>
+</div>
+</body>
+</html>

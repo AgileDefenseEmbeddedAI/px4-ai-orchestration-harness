@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agile Defense - Component Library</title>
+<style>
+/* ==========================================================================
+   AGILE DEFENSE DESIGN SYSTEM
+   Extracted from Figma: hTaNhoLLA0ohAzc3bX66RE
+   Viewport: 1728px (MacBook Pro 16")
+   ========================================================================== */
+
+/* --- CSS Reset --- */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ==========================================================================
+   DESIGN TOKENS
+   ========================================================================== */
+:root {
+  /* --- Brand Colors --- */
+  --color-red-primary:    #d23c3a;
+  --color-red-dark:       #c24841;
+  --color-red-bright:     #ff5a58;
+
+  /* --- Navy / Blue Palette --- */
+  --color-navy-deepest:   #061033;
+  --color-navy-deep:      #0b2451;
+  --color-navy-mid:       #1f3864;
+  --color-blue-primary:   #4386c3;
+  --color-blue-light:     #a9d8fb;
+  --color-blue-vivid:     #0092ff;
+
+  /* --- Neutrals --- */
+  --color-white:          #ffffff;
+  --color-black:          #000000;
+
+  /* --- Accent --- */
+  --color-orange:         #efb16a;
+
+  /* --- Backgrounds (Dark Theme) --- */
+  --bg-dark-page:         #061033;
+  --bg-dark-card:         #0b2451;
+  --bg-dark-card-featured:#1f3864;
+  --bg-dark-nav:          #000000;
+
+  /* --- Backgrounds (Light Theme) --- */
+  --bg-light-page:        #ffffff;
+  --bg-light-card:        #0b2451;
+
+  /* --- Typography --- */
+  --font-primary:         'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-secondary:       'Inter', sans-serif;
+
+  /* --- Font Sizes --- */
+  --text-hero:            124.88px;   /* Hero "Always" text */
+  --text-display:         96px;       /* Large display headings */
+  --text-h1:              64px;       /* Section headings */
+  --text-h2:              40px;       /* Sub-section headings */
+  --text-h3:              32px;       /* Card titles */
+  --text-h4:              24px;       /* Subtitles / labels */
+  --text-sidebar:         20px;       /* Sidebar nav items */
+  --text-body:            17px;       /* Body / description text */
+  --text-nav:             14px;       /* Navigation links */
+
+  /* --- Font Weights --- */
+  --weight-regular:       400;
+  --weight-medium:        500;
+  --weight-bold:          700;
+  --weight-extrabold:     800;
+
+  /* --- Line Heights (from Figma computed) --- */
+  --lh-tight:             1.2;
+  --lh-normal:            1.4;
+  --lh-relaxed:           1.65;
+
+  /* --- Spacing (derived from Figma layout gaps) --- */
+  --space-xs:             8px;
+  --space-sm:             16px;
+  --space-md:             24px;
+  --space-lg:             32px;
+  --space-xl:             48px;
+  --space-2xl:            64px;
+  --space-3xl:            96px;
+  --space-4xl:            120px;
+
+  /* --- Layout --- */
+  --viewport-width:       1728px;
+  --content-max:          1488px;
+  --content-narrow:       726px;
+  --sidebar-width:        573px;
+  --detail-panel-width:   771px;
+
+  /* --- Component Sizes --- */
+  --icon-lg:              48px;
+  --icon-md:              32px;
+  --icon-sm:              24px;
+  --icon-xs:              20px;
+  --icon-inner-lg:        40px;
+  --icon-inner-sm:        20px;
+
+  --nav-height:           45px;
+  --logo-width:           227px;
+  --logo-height:          94px;
+  --logo-small-width:     116px;
+  --logo-small-height:    48px;
+
+  --button-height:        45px;
+  --card-3col-width:      476px;
+  --card-2col-width:      729px;
+  --stat-card-width:      354px;
+  --stat-card-height:     206px;
+
+  /* --- Border Radius --- */
+  --radius-none:          0px;
+  --radius-sm:            4px;
+  --radius-md:            8px;
+
+  /* --- Stat Colors (for colored stat cards) --- */
+  --stat-blue:            #a9d8fb;
+  --stat-orange:          #efb16a;
+  --stat-blue-mid:        #4386c3;
+  --stat-red:             #d23c3a;
+  --stat-blue-vivid:      #0092ff;
+}
+
+/* ==========================================================================
+   BASE TYPOGRAPHY
+   ========================================================================== */
+body {
+  font-family: var(--font-primary);
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+  line-height: var(--lh-normal);
+  color: var(--color-white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================================================
+   THEME CONTAINERS
+   ========================================================================== */
+.theme-dark {
+  background-color: var(--bg-dark-page);
+  color: var(--color-white);
+}
+.theme-light {
+  background-color: var(--bg-light-page);
+  color: var(--color-navy-deep);
+}
+
+/* Theme-aware text overrides */
+.theme-light .section-heading    { color: var(--color-navy-deep); }
+.theme-light .section-subtitle   { color: var(--color-navy-deep); }
+.theme-light .section-body       { color: var(--color-navy-deep); }
+.theme-light .heading-red        { color: var(--color-red-primary); }
+.theme-light .heading-navy       { color: var(--color-navy-deepest); }
+.theme-light .btn-secondary .btn-text { color: var(--color-navy-deep); }
+
+.theme-dark .section-heading     { color: var(--color-white); }
+.theme-dark .section-subtitle    { color: var(--color-white); }
+.theme-dark .section-body        { color: var(--color-white); }
+.theme-dark .heading-red         { color: var(--color-red-primary); }
+.theme-dark .btn-secondary .btn-text  { color: var(--color-white); }
+
+/* ==========================================================================
+   LAYOUT
+   ========================================================================== */
+.page {
+  width: var(--viewport-width);
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.section {
+  width: 100%;
+  padding: var(--space-2xl) var(--space-4xl);
+  position: relative;
+}
+
+.content-container {
+  max-width: var(--content-max);
+  margin: 0 auto;
+}
+
+.content-narrow {
+  max-width: var(--content-narrow);
+}
+
+/* ==========================================================================
+   COMPONENT: NAVIGATION BAR
+   Height: 45px | BG: transparent/black
+   Font: Helvetica Neue 14px/500 white
+   ========================================================================== */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--nav-height);
+  padding: 0 var(--space-4xl);
+  background: transparent;
+  position: relative;
+  z-index: 100;
+}
+
+.navbar-logo {
+  width: var(--logo-width);
+  height: var(--logo-height);
+}
+
+.navbar-logo-small {
+  width: var(--logo-small-width);
+  height: var(--logo-small-height);
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: var(--nav-height);
+  list-style: none;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 0 var(--space-sm);
+  height: var(--nav-height);
+  font-family: var(--font-primary);
+  font-size: var(--text-nav);
+  font-weight: var(--weight-medium);
+  color: var(--color-white);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.nav-item-dropdown::after {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 6px;
+  background: var(--color-white);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  margin-left: 4px;
+}
+
+.nav-item-cta {
+  background-color: var(--color-red-dark);
+  color: var(--color-white);
+  padding: 0 20px;
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   COMPONENT: HERO SECTION
+   Full-width with background image, gradient overlay, large typography
+   ========================================================================== */
+.hero {
+  position: relative;
+  min-height: 600px;
+  display: flex;
+  align-items: flex-end;
+  padding: var(--space-3xl) var(--space-4xl);
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 726px;
+}
+
+.hero-accent-text {
+  font-family: var(--font-primary);
+  font-size: var(--text-hero);
+  font-weight: var(--weight-medium);
+  color: var(--color-red-dark);
+  line-height: var(--lh-tight);
+}
+
+/* ==========================================================================
+   COMPONENT: SECTION HEADER
+   Pattern: subtitle (24/500) -> heading (64/700) -> body (17/400) -> CTAs
+   Max-width: 726px
+   ========================================================================== */
+.section-header {
+  max-width: var(--content-narrow);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.section-subtitle {
+  font-family: var(--font-primary);
+  font-size: var(--text-h4);
+  font-weight: var(--weight-medium);
+  color: var(--color-white);
+  line-height: var(--lh-tight);
+}
+
+.section-heading {
+  font-family: var(--font-primary);
+  font-size: var(--text-h1);
+  font-weight: var(--weight-bold);
+  color: var(--color-white);
+  line-height: var(--lh-tight);
+}
+
+.section-heading-xl {
+  font-size: var(--text-display);
+  font-weight: var(--weight-medium);
+}
+
+.section-heading-lg {
+  font-size: var(--text-h2);
+  font-weight: var(--weight-bold);
+}
+
+.section-body {
+  font-family: var(--font-primary);
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+  color: var(--color-white);
+  line-height: var(--lh-relaxed);
+  max-width: 544px;
+}
+
+/* ==========================================================================
+   COMPONENT: BUTTONS
+   Height: 45px | Font: Helvetica Neue 14px/500
+   ========================================================================== */
+.btn-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  height: var(--button-height);
+  padding: 0 24px;
+  font-family: var(--font-primary);
+  font-size: var(--text-nav);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background-color: var(--color-red-primary);
+  color: var(--color-white);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--color-white);
+}
+
+.btn-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: var(--color-white);
+}
+
+.btn-text {
+  color: inherit;
+}
+
+/* ==========================================================================
+   COMPONENT: FEATURE CARDS (3-Column)
+   Width: ~538px each (1664 / 3) at full, or 476px in horizontal layout
+   Height: 590px (tall) or 372px (compact) or 280px (small) or 400px (problem)
+   BG: #0b2451 | Featured card: gradient from #1f3864
+   ========================================================================== */
+.card-grid-3 {
+  display: flex;
+  gap: 24px;
+  width: var(--content-max);
+}
+
+.card-grid-3 .feature-card {
+  flex: 1;
+}
+
+.feature-card {
+  background-color: var(--bg-dark-card);
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+/* Tall variant: 590px */
+.feature-card--tall { height: 590px; }
+/* Compact variant: 372px */
+.feature-card--compact { height: 372px; }
+/* Small variant: 280px (2-col sub-grid) */
+.feature-card--small { height: 280px; }
+/* Problem variant: 400px */
+.feature-card--problem { height: 400px; }
+
+/* Featured (first) card gradient overlay */
+.feature-card--featured {
+  background: linear-gradient(180deg, var(--color-navy-mid) 0%, var(--color-navy-deepest) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card--featured::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--card-bg-image);
+  background-size: cover;
+  opacity: 0.3;
+  z-index: 0;
+}
+
+.feature-card--featured > * { position: relative; z-index: 1; }
+
+/* Card icon container */
+.card-icon {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.card-icon--md {
+  width: var(--icon-md);
+  height: var(--icon-md);
+}
+
+.card-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: var(--color-white);
+}
+
+/* Card text block */
+.card-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.card-title {
+  font-family: var(--font-primary);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-medium);
+  color: var(--color-white);
+  line-height: var(--lh-tight);
+}
+
+.card-description {
+  font-family: var(--font-primary);
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+  color: var(--color-white);
+  line-height: var(--lh-relaxed);
+}
+
+/* ==========================================================================
+   COMPONENT: FEATURE CARDS (2-Column Wide)
+   Width: 729px each | Height: 400px
+   Same styling, wider content area
+   ========================================================================== */
+.card-grid-2 {
+  display: flex;
+  gap: 24px;
+  width: var(--content-max);
+}
+
+.card-grid-2 .feature-card {
+  flex: 1;
+}
+
+/* ==========================================================================
+   COMPONENT: STAT CARDS
+   Width: 354px | Height: 206px | BG: #0b2451 (inner)
+   Number: 64px/500 colored | Bar: 8px colored | Label: 32px/500 colored
+   ========================================================================== */
+.stat-grid {
+  display: flex;
+  gap: 24px;
+  width: var(--content-max);
+}
+
+.stat-card {
+  flex: 1;
+  height: var(--stat-card-height);
+  background-color: var(--bg-dark-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-card-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  width: 306px;
+}
+
+.stat-value {
+  font-family: var(--font-primary);
+  font-size: var(--text-h1);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-tight);
+}
+
+.stat-bar {
+  width: 100%;
+  height: 8px;
+}
+
+.stat-label {
+  font-family: var(--font-primary);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-tight);
+}
+
+/* Stat color variants */
+.stat-card--blue    .stat-value, .stat-card--blue    .stat-label { color: var(--stat-blue); }
+.stat-card--blue    .stat-bar { background-color: var(--stat-blue); }
+.stat-card--orange  .stat-value, .stat-card--orange  .stat-label { color: var(--stat-orange); }
+.stat-card--orange  .stat-bar { background-color: var(--stat-orange); }
+.stat-card--mid     .stat-value, .stat-card--mid     .stat-label { color: var(--stat-blue-mid); }
+.stat-card--mid     .stat-bar { background-color: var(--stat-blue-mid); }
+.stat-card--red     .stat-value, .stat-card--red     .stat-label { color: var(--stat-red); }
+.stat-card--red     .stat-bar { background-color: var(--stat-red); }
+.stat-card--vivid   .stat-value, .stat-card--vivid   .stat-label { color: var(--stat-blue-vivid); }
+.stat-card--vivid   .stat-bar { background-color: var(--stat-blue-vivid); }
+
+/* ==========================================================================
+   COMPONENT: STATS BANNER (Highlight)
+   Full-width red accent | Large percentage + description
+   ========================================================================== */
+.stats-banner {
+  width: var(--content-max);
+  padding: var(--space-2xl) var(--space-xl);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xl);
+}
+
+.stats-banner-value {
+  font-family: var(--font-primary);
+  font-size: var(--text-display);
+  font-weight: var(--weight-bold);
+  color: var(--color-red-primary);
+  line-height: var(--lh-tight);
+}
+
+.stats-banner-label {
+  font-family: var(--font-primary);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-regular);
+  color: var(--color-white);
+}
+
+.stats-banner-description {
+  font-family: var(--font-primary);
+  font-size: var(--text-h4);
+  font-weight: var(--weight-medium);
+  color: var(--color-white);
+  flex: 1;
+}
+
+/* ==========================================================================
+   COMPONENT: SIDEBAR NAVIGATION
+   Width: 573px | Items: 48px tall
+   Icon: 48x48 container with 20x20 icon | Text: 20px/500
+   Active state: red background on icon, bold red text
+   ========================================================================== */
+.sidebar-nav {
+  width: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  height: 48px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.sidebar-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: transparent;
+}
+
+.sidebar-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: var(--color-white);
+}
+
+.sidebar-text {
+  font-family: var(--font-primary);
+  font-size: var(--text-sidebar);
+  font-weight: var(--weight-medium);
+  color: var(--color-white);
+}
+
+/* Active sidebar item */
+.sidebar-item--active .sidebar-icon {
+  background-color: var(--color-red-primary);
+}
+
+.sidebar-item--active .sidebar-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.sidebar-item--active .sidebar-text {
+  font-weight: var(--weight-bold);
+  color: var(--color-red-bright);
+}
+
+/* Light theme sidebar */
+.theme-light .sidebar-text { color: var(--color-navy-deep); }
+.theme-light .sidebar-item--active .sidebar-text { color: var(--color-red-primary); }
+
+/* ==========================================================================
+   COMPONENT: DETAIL PANEL
+   Width: 771px | Sections stacked: Challenge / Approach / Result
+   Each section: icon (48x48) + text block
+   BG: #0b2451
+   ========================================================================== */
+.detail-panel {
+  width: var(--detail-panel-width);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-dark-card);
+}
+
+.detail-section {
+  display: flex;
+  gap: var(--space-xl);
+  padding: var(--space-xl) var(--space-xl);
+  background-color: var(--bg-dark-card);
+}
+
+.detail-icon {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detail-icon svg {
+  width: 40px;
+  height: 40px;
+  fill: var(--color-white);
+}
+
+.detail-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  max-width: 627px;
+}
+
+.detail-title {
+  font-family: var(--font-primary);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-medium);
+  color: var(--color-white);
+}
+
+.detail-body {
+  font-family: var(--font-primary);
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+  color: var(--color-white);
+  line-height: var(--lh-relaxed);
+}
+
+/* Light theme detail panel */
+.theme-light .detail-title { color: var(--color-navy-deepest); }
+.theme-light .detail-body  { color: var(--color-navy-deepest); }
+
+/* ==========================================================================
+   COMPONENT: CTA SECTION
+   Large heading (64/500) + description (17/400) + button group
+   Full width, centered or left-aligned
+   ========================================================================== */
+.cta-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  max-width: 1157px;
+}
+
+.cta-heading {
+  font-family: var(--font-primary);
+  font-size: var(--text-h1);
+  font-weight: var(--weight-medium);
+  color: var(--color-white);
+  line-height: var(--lh-tight);
+}
+
+.cta-body {
+  font-family: var(--font-primary);
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+  color: var(--color-white);
+  max-width: 405px;
+  line-height: var(--lh-relaxed);
+}
+
+/* ==========================================================================
+   COMPONENT: BACKGROUND DECORATION (Abstract Vectors)
+   The "A" letterform gradient vectors that appear on multiple pages
+   ========================================================================== */
+.bg-decoration {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 1115px;
+  height: 624px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ==========================================================================
+   COMPONENT: TWO-COLUMN LAYOUT (Sidebar + Detail)
+   Used for the "problem detail" pages
+   ========================================================================== */
+.two-col-layout {
+  display: flex;
+  gap: var(--space-2xl);
+  width: var(--content-max);
+}
+
+.two-col-layout .col-sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+}
+
+.two-col-layout .col-main {
+  flex: 1;
+}
+
+/* ==========================================================================
+   COMPONENT: SECTION + CARDS LAYOUT
+   Used for "Mission Impact" style pages: header left, cards right
+   ========================================================================== */
+.split-layout {
+  display: flex;
+  gap: var(--space-2xl);
+  align-items: flex-start;
+}
+
+.split-layout .split-header {
+  width: 607px;
+  flex-shrink: 0;
+}
+
+.split-layout .split-cards {
+  flex: 1;
+}
+
+/* ==========================================================================
+   COMPONENT: IMAGE BACKGROUND SECTION
+   Full-bleed image with optional overlay
+   ========================================================================== */
+.image-section {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.image-section img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ==========================================================================
+   UTILITY CLASSES
+   ========================================================================== */
+.text-red     { color: var(--color-red-primary); }
+.text-navy    { color: var(--color-navy-deepest); }
+.text-white   { color: var(--color-white); }
+.text-blue    { color: var(--color-blue-primary); }
+
+.bg-navy-deep { background-color: var(--color-navy-deepest); }
+.bg-navy      { background-color: var(--color-navy-deep); }
+.bg-red       { background-color: var(--color-red-primary); }
+.bg-white     { background-color: var(--color-white); }
+
+.mt-sm  { margin-top: var(--space-sm); }
+.mt-md  { margin-top: var(--space-md); }
+.mt-lg  { margin-top: var(--space-lg); }
+.mt-xl  { margin-top: var(--space-xl); }
+.mt-2xl { margin-top: var(--space-2xl); }
+
+.gap-sm  { gap: var(--space-sm); }
+.gap-md  { gap: var(--space-md); }
+.gap-lg  { gap: var(--space-lg); }
+.gap-xl  { gap: var(--space-xl); }
+
+/* ==========================================================================
+   DEMO SECTION DIVIDERS
+   ========================================================================== */
+.component-demo {
+  border: 1px dashed rgba(255,255,255,0.15);
+  margin: 40px 0;
+  padding: 40px;
+}
+
+.component-demo h2.demo-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--color-blue-light);
+  margin-bottom: 24px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+</style>
+</head>
+<body>
+
+<!-- ======================================================================
+     COMPONENT LIBRARY DEMO - DARK THEME
+     ====================================================================== -->
+<div class="page theme-dark">
+
+  <!-- ===== NAVBAR ===== -->
+  <div class="component-demo">
+    <h2 class="demo-label">Component: Navigation Bar</h2>
+    <nav class="navbar">
+      <div class="navbar-logo" style="background:#333;display:flex;align-items:center;justify-content:center;font-size:12px;color:#999;">[AGILE DEFENSE LOGO 227x94]</div>
+      <ul class="navbar-links">
+        <li><a class="nav-item nav-item-dropdown" href="#">Company</a></li>
+        <li><a class="nav-item nav-item-dropdown" href="#">Capabilities</a></li>
+        <li><a class="nav-item nav-item-dropdown" href="#">Agile Labs</a></li>
+        <li><a class="nav-item" href="#">Careers</a></li>
+        <li><a class="nav-item" href="#">News</a></li>
+        <li><a class="nav-item" href="#">Events</a></li>
+        <li><a class="nav-item nav-item-cta" href="#">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- ===== SECTION HEADER ===== -->
+  <div class="component-demo">
+    <h2 class="demo-label">Component: Section Header (Dark Theme)</h2>
+    <div class="content-container">
+      <div class="section-header">
+        <span class="section-subtitle">5 Layers to Value Delivery</span>
+        <h1 class="section-heading section-heading-xl">The future of ai-enabled workforce</h1>
+        <p class="section-body">Secure, scalable, and FedRAMP-compliant technology that revolutionizes how government and defense agencies operate in the age of AI.</p>
+        <div class="btn-group mt-lg">
+          <a class="btn btn-primary" href="#">
+            <span class="btn-icon"><svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4" stroke="white" fill="none" stroke-width="1.5"/></svg></span>
+            <span class="btn-text">Explore the 5 layers</span>
+          </a>
+          <a class="btn btn-secondary" href="#">
+            <span class="btn-icon"><svg viewBox="0 0 16 16"><polygon points="6,3 13,8 6,13" fill="white"/></svg></span>
+            <span class="btn-text">Watch demo</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION HEADER - Mission Impact Style ===== -->
+  <div class="component-demo">
+    <h2 class="demo-label">Component: Section Header - Mission Impact Variant</h2>
+    <div class="content-container">
+      <div class="section-header">
+        <span class="section-subtitle">Vertical-Specific Applications</span>
+        <h1 class="section-heading heading-red" style="color:var(--color-white)">Mission Impact</h1>
+        <p class="section-body">Our mission-focused applications deliver targeted solutions for government and defense challenges, powered by the underlying layers.</p>
+        <div class="btn-group mt-lg">
+          <a class="btn btn-primary" href="#">
+            <span class="btn-icon"><svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4" stroke="white" fill="none" stroke-width="1.5"/></svg></span>
+            <span class="btn-text">Learn more</span>
+          </a>
+          <a class="btn btn-secondary" href="#">
+            <span class="btn-icon"><svg viewBox="0 0 16 16"><polygon points="6,3 13,8 6,13" fill="white"/></svg></span>
+            <span class="btn-text">See Demo</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FEATURE CARDS (3-Column Tall) ===== -->
+  <div class="component-demo">
+    <h2 class="demo-label">Component: Feature Cards - 3 Column Tall (590px)</h2>
+    <div class="content-container">
+      <div class="card-grid-3">
+        <div class="feature-card feature-card--tall feature-card--featured">
+          <div class="card-icon">
+            <svg viewBox="0 0 48 48"><rect x="8" y="8" width="14" height="14" fill="white"/><rect x="26" y="8" width="14" height="14" fill="white"/><rect x="8" y="26" width="14" height="14" fill="white"/><rect x="26" y="26" width="14" height="14" fill="white"/></svg>
+          </div>
+          <div class="card-text">
+            <h3 class="card-title">Digital Transformation</h3>
+            <p class="card-description">Empower organizations with cutting-edge technologies to modernize operations and enhance capabilities.</p>
+          </div>
+        </div>
+        <div class="feature-card feature-card--tall">
+          <div class="card-icon">
+            <svg viewBox="0 0 48 48"><path d="M24 6v36M14 16h20M14 32h20" stroke="white" fill="none" stroke-width="2"/></svg>
+          </div>
+          <div class="card-text">
+            <h3 class="card-title">Cyber</h3>
+            <p class="card-description">Comprehensive cybersecurity solutions to protect critical infrastructure and sensitive data.</p>
+          </div>
+        </div>
+        <div class="feature-card feature-card--tall">
+          <div class="card-icon">
+            <svg viewBox="0 0 48 48"><circle cx="16" cy="24" r="4" fill="white"/><circle cx="32" cy="16" r="4" fill="white"/><circle cx="32" cy="32" r="4" fill="white"/><line x1="20" y1="22" x2="28" y2="18" stroke="white" stroke-width="2"/><line x1="20" y1="26" x2="28" y2="30" stroke="white" stroke-width="2"/></svg>
+          </div>
+          <div class="card-text">
+            <h3 class="card-title">Data/AI</h3>
+            <p class="card-description">Advanced data analytics and artificial intelligence solutions delivering actionable insights.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FEATURE CARDS (3-Column Compact) ===== -->
+  <div class="component-demo">
+    <h2 class="demo-label">Component: Feature Cards - 3 Column Compact (372px)</h2>
+    <div class="content-container">
+      <div class="card-grid-3">
+        <div class="feature-card feature-card--compact feature-card--featured">
+          <div class="card-icon card-icon--md">
+            <svg viewBox="0 0 32 32"><rect x="5" y="5" width="9" height="9" fill="white"/><rect x="18" y="5" width="9" height="9" fill="white"/><rect x="5" y="18" width="9" height="9" fill="white"/><rect x="18" y="18" width="9" height="9" fill="white"/></svg>
+          </div>
+          <div class="card-text">
+            <h3 class="card-title">Digital Transformation</h3>
+            <p class="card-description">Empower organizations with cutting-edge technologies to modernize operations and enhance capabilities.</p>
+          </div>
+        </div>
+        <div class="feature-card feature-card--compact">
+          <div class="card-icon card-icon--md">
+            <svg viewBox="0 0 32 32"><path d="M16 4v24M10 10h12M10 22h12" stroke="white" fill="none" stroke-width="2"/></svg>
+          </div>
+          <div class="card-text">
+            <h3 class="card-title">Cyber</h3>
+            <p class="card-description">Comprehensive cybersecurity solutions to protect critical infrastructure and sensitive data.</p>
+          </div>
+        </div>
+        <div class="feature-card feature-card--compact">
+          <div class="card-icon card-icon--md">
+            <svg viewBox="0 0 32 32"><circle cx="10" cy="16" r="3" fill="white"/><circle cx="22" cy="10" r="3" fill="white"/><circle cx="22" cy="22" r="3" fill="white"/></svg>
+          </div>
+          <div class="card-text">
+            <h3 class="card-title">Data/AI</h3>
+            <p class="card-description">Advanced data analytics and artificial intelligence solutions delivering actionable insights.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PROBLEM CARDS (3-Column) ===== -->
+  <div class="component-demo">
+    <h2 class="demo-label">Component: Problem Cards - 3 Column (400px)</h2>
+    <div class="content-container">
+      <div class="card-grid-3">
+        <div class="feature-card feature-card--problem feature-card--featured">
+          <div class="card-icon">
+            <svg viewBox="0 0 48 48"><rect x="6" y="15" width="36" height="18" rx="2" fill="none" stroke="white" stroke-width="2"/><circle cx="16" cy="24" r="5" fill="none" stroke="white" stroke-width="2"/><circle cx="32" cy="24" r="5" fill="none" stroke="white" stroke-width="2"/></svg>
+          </div>
+          <div class="card-text">
+            <h3 class="card-title">Login & CAC Loops</h3>
+            <p class="card-description">Endless re-authentication and certificate prompts</p>
+          </div>
+        </div>
+        <div class="feature-card feature-card--problem">
+          <div class="card-icon">
+            <svg viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="32" rx="2" fill="none" stroke="white" stroke-width="2"/><path d="M20 20l8 8M28 20l-8 8" stroke="white" stroke-width="2"/></svg>
+          </div>
+          <div class="card-text">
+            <h3 class="card-title">Pages That Never Load</h3>
+            <p class="card-description">Blank screens, timeouts, and constant refreshes</p>
+          </div>
+        </div>
+        <div class="feature-card feature-card--problem">
+          <div class="card-icon">
+            <svg viewBox="0 0 48 48"><path d="M14 28l10 10 10-10M24 38V10" stroke="white" fill="none" stroke-width="2"/><rect x="10" y="6" width="28" height="4" fill="white" rx="1"/></svg>
+          </div>
+          <div class="card-text">
+            <h3 class="card-title">Blocked Mission Files</h3>
+            <p class="card-description">Downloads fail or files stripped of critical content</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== STAT CARDS ===== -->
+  <div class="component-demo">
+    <h2 class="demo-label">Component: Stat Cards (4 Column)</h2>
+    <div class="content-container">
+      <div class="stat-grid">
+        <div class="stat-card stat-card--blue">
+          <div class="stat-card-inner">
+            <span class="stat-value">3.6M</span>
+            <div class="stat-bar"></div>
+            <span class="stat-label">Total Users Affected</span>
+          </div>
+        </div>
+        <div class="stat-card stat-card--orange">
+          <div class="stat-card-inner">
+            <span class="stat-value">847.0K</span>
+            <div class="stat-bar"></div>
+            <span class="stat-label">Daily Incidents</span>
+          </div>
+        </div>
+        <div class="stat-card stat-card--mid">
+          <div class="stat-card-inner">
+            <span class="stat-value">86.0%</span>
+            <div class="stat-bar"></div>
+            <span class="stat-label">Avg. Severity Score</span>
+          </div>
+        </div>
+        <div class="stat-card stat-card--red">
+          <div class="stat-card-inner">
+            <span class="stat-value">24.0%</span>
+            <div class="stat-bar"></div>
+            <span class="stat-label">Productivity Loss</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== STATS BANNER ===== -->
+  <div class="component-demo">
+    <h2 class="demo-label">Component: Stats Banner</h2>
+    <div class="content-container">
+      <div class="stats-banner">
+        <div>
+          <div class="stats-banner-value">91%</div>
+          <div class="stats-banner-label">User Dissatisfaction</div>
+        </div>
+        <div class="stats-banner-description">
+          If you're hearing your users call it "Nevermenlo," you're not alone&mdash;but the issue isn't Menlo itself; it's how it's integrated and operated.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SIDEBAR NAV ===== -->
+  <div class="component-demo">
+    <h2 class="demo-label">Component: Sidebar Navigation</h2>
+    <div class="content-container">
+      <div class="sidebar-nav">
+        <div class="sidebar-item">
+          <div class="sidebar-icon"><svg viewBox="0 0 20 20"><path d="M10 2v16M5 7h10" stroke="white" fill="none" stroke-width="1.5"/></svg></div>
+          <span class="sidebar-text">Login, CAC, and Identity Friction</span>
+        </div>
+        <div class="sidebar-item sidebar-item--active">
+          <div class="sidebar-icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" fill="none" stroke="white" stroke-width="1.5"/><path d="M8 8l8 8M16 8l-8 8" stroke="white" stroke-width="1.5"/></svg></div>
+          <span class="sidebar-text">Pages That Constantly Refresh, Hang, or Break</span>
+        </div>
+        <div class="sidebar-item">
+          <div class="sidebar-icon"><svg viewBox="0 0 20 20"><path d="M10 14l-6 6h12l-6-6zM10 2v12" stroke="white" fill="none" stroke-width="1.5"/></svg></div>
+          <span class="sidebar-text">Download & File-Handling Friction</span>
+        </div>
+        <div class="sidebar-item">
+          <div class="sidebar-icon"><svg viewBox="0 0 20 20"><polygon points="6,4 16,10 6,16" fill="white"/></svg></div>
+          <span class="sidebar-text">Broken Media, SaaS, and Collaboration Tools</span>
+        </div>
+        <div class="sidebar-item">
+          <div class="sidebar-icon"><svg viewBox="0 0 20 20"><rect x="2" y="2" width="16" height="16" fill="none" stroke="white" stroke-width="1.5"/><line x1="8" y1="2" x2="8" y2="18" stroke="white" stroke-width="1.5"/></svg></div>
+          <span class="sidebar-text">Browser Compatibility & Endpoint Drift</span>
+        </div>
+        <div class="sidebar-item">
+          <div class="sidebar-icon"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="none" stroke="white" stroke-width="1.5"/><circle cx="10" cy="10" r="2" fill="white"/></svg></div>
+          <span class="sidebar-text">Latency, Lag, and "NIPR Is a Hassle"</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DETAIL PANEL ===== -->
+  <div class="component-demo">
+    <h2 class="demo-label">Component: Detail Panel (Challenge / Approach / Result)</h2>
+    <div class="content-container">
+      <div class="detail-panel">
+        <div class="detail-section">
+          <div class="detail-icon">
+            <svg viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="32" rx="2" fill="none" stroke="white" stroke-width="2"/><path d="M16 16l16 16M32 16L16 32" stroke="white" stroke-width="2"/></svg>
+          </div>
+          <div class="detail-text">
+            <h3 class="detail-title">Challenge</h3>
+            <p class="detail-body">Critical sites time out, blank-screen, or enter infinite refresh loops&mdash;especially government portals and training sites.</p>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-icon">
+            <svg viewBox="0 0 48 48"><path d="M24 8v32M12 24h24" stroke="white" fill="none" stroke-width="2"/><circle cx="24" cy="24" r="16" fill="none" stroke="white" stroke-width="2"/></svg>
+          </div>
+          <div class="detail-text">
+            <h3 class="detail-title">Our Approach</h3>
+            <p class="detail-body">Profile problematic sites and identify rendering/script conflicts. Adjust Menlo isolation modes and browser compatibility settings. Certify high-value apps through controlled tuning and regression testing.</p>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-icon">
+            <svg viewBox="0 0 48 48"><rect x="6" y="6" width="36" height="36" rx="2" fill="none" stroke="white" stroke-width="2"/><path d="M14 24l6 6 14-14" stroke="white" fill="none" stroke-width="3"/></svg>
+          </div>
+          <div class="detail-text">
+            <h3 class="detail-title">Result</h3>
+            <p class="detail-body">Mission-critical sites load reliably the first time.</p>
+            <p class="detail-body">99.5% uptime on critical sites</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CTA SECTION ===== -->
+  <div class="component-demo">
+    <h2 class="demo-label">Component: CTA Section</h2>
+    <div class="content-container">
+      <div class="cta-section">
+        <h2 class="cta-heading">Ready to Transform Your Organization with AI-Enabled Workforce?</h2>
+        <p class="cta-body">Schedule a demo to see how Agile Labs can secure and accelerate your mission-critical operations.</p>
+        <div class="btn-group">
+          <a class="btn btn-primary" href="#">
+            <span class="btn-icon"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="white" stroke-width="1.5"/><path d="M8 5v6M5 8h6" stroke="white" stroke-width="1.5"/></svg></span>
+            <span class="btn-text">Request a demo</span>
+          </a>
+          <a class="btn btn-secondary" href="#">
+            <span class="btn-icon"><svg viewBox="0 0 16 16"><path d="M8 2v8M4 7l4 4 4-4M3 13h10" stroke="white" fill="none" stroke-width="1.5"/></svg></span>
+            <span class="btn-text">Download white-paper</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TWO-COL LAYOUT (Sidebar + Detail) ===== -->
+  <div class="component-demo">
+    <h2 class="demo-label">Component: Two-Column Layout (Sidebar + Detail Panel)</h2>
+    <div class="content-container">
+      <div style="display:flex;gap:64px;margin-bottom:32px">
+        <div style="max-width:1102px">
+          <h2 style="font-size:var(--text-h2);font-weight:var(--weight-bold);color:var(--color-white);line-height:1.15">We Fix the Problems<br>Your Users Complain About</h2>
+          <p style="font-size:var(--text-h4);font-weight:var(--weight-medium);color:var(--color-white);margin-top:16px">Concrete failure modes mapped to mission-focused outcomes that deliver measurable results</p>
+        </div>
+      </div>
+      <div class="two-col-layout">
+        <div class="col-sidebar">
+          <div class="sidebar-nav">
+            <div class="sidebar-item">
+              <div class="sidebar-icon"><svg viewBox="0 0 20 20"><path d="M10 2v16" stroke="white" fill="none" stroke-width="1.5"/></svg></div>
+              <span class="sidebar-text">Login, CAC, and Identity Friction</span>
+            </div>
+            <div class="sidebar-item sidebar-item--active">
+              <div class="sidebar-icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" fill="none" stroke="white" stroke-width="1.5"/></svg></div>
+              <span class="sidebar-text">Pages That Constantly Refresh, Hang, or Break</span>
+            </div>
+            <div class="sidebar-item">
+              <div class="sidebar-icon"><svg viewBox="0 0 20 20"><path d="M10 14l-6 6h12l-6-6z" fill="white"/></svg></div>
+              <span class="sidebar-text">Download & File-Handling Friction</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-main">
+          <div class="detail-panel">
+            <div class="detail-section">
+              <div class="detail-icon"><svg viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="32" rx="2" fill="none" stroke="white" stroke-width="2"/></svg></div>
+              <div class="detail-text">
+                <h3 class="detail-title">Challenge</h3>
+                <p class="detail-body">Critical sites time out, blank-screen, or enter infinite refresh loops.</p>
+              </div>
+            </div>
+            <div class="detail-section">
+              <div class="detail-icon"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="16" fill="none" stroke="white" stroke-width="2"/></svg></div>
+              <div class="detail-text">
+                <h3 class="detail-title">Our Approach</h3>
+                <p class="detail-body">Profile problematic sites and identify rendering/script conflicts.</p>
+              </div>
+            </div>
+            <div class="detail-section">
+              <div class="detail-icon"><svg viewBox="0 0 48 48"><path d="M14 24l6 6 14-14" stroke="white" fill="none" stroke-width="3"/></svg></div>
+              <div class="detail-text">
+                <h3 class="detail-title">Result</h3>
+                <p class="detail-body">99.5% uptime on critical sites</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SPLIT LAYOUT (Header + Cards Side by Side) ===== -->
+  <div class="component-demo">
+    <h2 class="demo-label">Component: Split Layout (Section Header + Card Grid)</h2>
+    <div class="content-container">
+      <div class="split-layout">
+        <div class="split-header">
+          <div class="section-header">
+            <span class="section-subtitle">Vertical-Specific Applications</span>
+            <h1 class="section-heading">Mission Impact</h1>
+            <p class="section-body">Our mission-focused applications deliver targeted solutions for government and defense challenges.</p>
+            <div class="btn-group mt-lg">
+              <a class="btn btn-primary" href="#"><span class="btn-text">Learn more</span></a>
+              <a class="btn btn-secondary" href="#"><span class="btn-text">See Demo</span></a>
+            </div>
+          </div>
+        </div>
+        <div class="split-cards">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+            <div class="feature-card feature-card--small feature-card--featured">
+              <div class="card-icon card-icon--md"><svg viewBox="0 0 32 32"><rect x="5" y="5" width="9" height="9" fill="white"/><rect x="18" y="5" width="9" height="9" fill="white"/><rect x="5" y="18" width="9" height="9" fill="white"/><rect x="18" y="18" width="9" height="9" fill="white"/></svg></div>
+              <div class="card-text"><h3 class="card-title">Digital Transformation</h3><p class="card-description">Empower organizations with cutting-edge technologies.</p></div>
+            </div>
+            <div class="feature-card feature-card--small">
+              <div class="card-icon card-icon--md"><svg viewBox="0 0 32 32"><path d="M16 4v24" stroke="white" fill="none" stroke-width="2"/></svg></div>
+              <div class="card-text"><h3 class="card-title">Cyber</h3><p class="card-description">Comprehensive cybersecurity solutions.</p></div>
+            </div>
+            <div class="feature-card feature-card--small">
+              <div class="card-icon card-icon--md"><svg viewBox="0 0 32 32"><circle cx="10" cy="16" r="3" fill="white"/><circle cx="22" cy="10" r="3" fill="white"/></svg></div>
+              <div class="card-text"><h3 class="card-title">Data/AI</h3><p class="card-description">Advanced data analytics and AI solutions.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ======================================================================
+     COMPONENT LIBRARY DEMO - LIGHT THEME
+     ====================================================================== -->
+<div class="page theme-light" style="margin-top:80px">
+
+  <div class="component-demo" style="border-color:rgba(0,0,0,0.15)">
+    <h2 class="demo-label" style="color:var(--color-navy-deep);border-color:rgba(0,0,0,0.1)">Light Theme: Section Header</h2>
+    <div class="content-container">
+      <div class="section-header">
+        <span class="section-subtitle">Vertical-Specific Applications</span>
+        <h1 class="section-heading heading-red">Mission Impact</h1>
+        <p class="section-body">Our mission-focused applications deliver targeted solutions for government and defense challenges, powered by the underlying layers.</p>
+        <div class="btn-group mt-lg">
+          <a class="btn btn-primary" href="#"><span class="btn-text">Learn more</span></a>
+          <a class="btn btn-secondary" href="#"><span class="btn-text">See Demo</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="component-demo" style="border-color:rgba(0,0,0,0.15)">
+    <h2 class="demo-label" style="color:var(--color-navy-deep);border-color:rgba(0,0,0,0.1)">Light Theme: Stat Cards</h2>
+    <div class="content-container">
+      <div class="stat-grid">
+        <div class="stat-card stat-card--vivid">
+          <div class="stat-card-inner">
+            <span class="stat-value">3.6M</span>
+            <div class="stat-bar"></div>
+            <span class="stat-label">Total Users Affected</span>
+          </div>
+        </div>
+        <div class="stat-card stat-card--orange">
+          <div class="stat-card-inner">
+            <span class="stat-value">847.0K</span>
+            <div class="stat-bar"></div>
+            <span class="stat-label">Daily Incidents</span>
+          </div>
+        </div>
+        <div class="stat-card stat-card--mid">
+          <div class="stat-card-inner">
+            <span class="stat-value">86.0%</span>
+            <div class="stat-bar"></div>
+            <span class="stat-label">Avg. Severity Score</span>
+          </div>
+        </div>
+        <div class="stat-card stat-card--red">
+          <div class="stat-card-inner">
+            <span class="stat-value">24.0%</span>
+            <div class="stat-bar"></div>
+            <span class="stat-label">Productivity Loss</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

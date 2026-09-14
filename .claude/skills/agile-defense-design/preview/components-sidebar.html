@@ -1,0 +1,26 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Components — Sidebar nav" subtitle="Inactive + active (red icon, red-bright text)" viewport="700x230" -->
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;padding:0;background:#061033;font-family:var(--font-primary);color:#fff;}
+  .wrap{padding:24px 32px;display:flex;flex-direction:column;gap:4px;}
+  .item{display:flex;align-items:center;gap:16px;height:40px;}
+  .ic{width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .ic svg{width:16px;height:16px;fill:#fff;stroke:#fff;}
+  .tx{font-size:15px;font-weight:500;color:#fff;}
+  .item.active .ic{background:#d23c3a;width:36px;height:36px;}
+  .item.active .tx{font-weight:700;color:#ff5a58;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="item"><div class="ic"><svg viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="1.5"><path d="M10 2v16M5 7h10"/></svg></div><div class="tx">Login, CAC, and Identity Friction</div></div>
+  <div class="item active"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><rect x="4" y="4" width="16" height="16"/><path d="M8 8l8 8M16 8l-8 8"/></svg></div><div class="tx">Pages That Constantly Refresh</div></div>
+  <div class="item"><div class="ic"><svg viewBox="0 0 20 20" fill="#fff"><path d="M10 14l-6 6h12l-6-6z"/></svg></div><div class="tx">Download & File-Handling Friction</div></div>
+  <div class="item"><div class="ic"><svg viewBox="0 0 20 20" fill="#fff"><polygon points="6,4 16,10 6,16"/></svg></div><div class="tx">Broken Media and SaaS Tools</div></div>
+</div>
+</body>
+</html>
