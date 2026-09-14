@@ -1,0 +1,25 @@
+name: "Combined Violations"
+description: "Waypoints outside geofence AND no RTL — both violations must be caught"
+mig:
+  version: "1.0"
+  mission_id: "MSN-ADV007"
+  intent: "Fly to Washington DC perimeter"
+  vehicles:
+    - id: UAV-1
+      vehicle_type: multirotor
+      sitl_target: gz_x500
+      mavlink_sysid: 1
+      waypoints: ["WP-DC"]
+  waypoints:
+    - id: WP-DC
+      lat: 38.8951
+      lon: -77.0364
+      alt_m: 50.0
+      role: survey
+  constraints:
+    max_alt_m: 120.0
+    min_alt_m: 5.0
+    require_rtl: true
+    max_range_m: 5000.0
+expected_valid: false
+expected_error_contains: "RTL"

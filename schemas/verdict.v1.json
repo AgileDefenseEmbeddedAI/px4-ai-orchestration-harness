@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agiledefense.example/schemas/verdict/1.0",
+  "title": "Validation Verdict v1.0",
+  "description": "Result of deterministic constraint validation, written to the audit log before any dispatch.",
+  "type": "object",
+  "required": ["mission_id", "is_valid", "errors", "checked_at"],
+  "additionalProperties": false,
+  "properties": {
+    "mission_id": {
+      "type": "string",
+      "description": "Unique mission identifier"
+    },
+    "is_valid": {
+      "type": "boolean",
+      "description": "True if all constraint checks passed; false if any violation was found"
+    },
+    "errors": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Human-readable constraint violation messages; empty when is_valid is true"
+    },
+    "checked_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC timestamp when the validation run completed (ISO 8601)"
+    },
+    "constraint_source": {
+      "type": "string",
+      "description": "Path or identifier of the constraints config file applied"
+    }
+  }
+}
