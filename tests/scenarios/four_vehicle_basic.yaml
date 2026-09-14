@@ -1,0 +1,19 @@
+name: "Four Vehicle Basic"
+description: >
+  Two multirotors survey Alpha and Bravo sectors while two rovers secure
+  the perimeter. All vehicles return to base. Used as the canonical dual-transport
+  parity fixture (REQ-DSP-02 / REQ-NF-04).
+
+intent: >
+  Dispatch UAV-1 and UAV-2 to survey Alpha and Bravo sectors at 60m altitude.
+  Deploy GND-1 and GND-2 to secure the perimeter. All vehicles return to base.
+
+expected:
+  vehicle_types:
+    - multirotor
+    - multirotor
+    - rover
+    - rover
+  min_waypoints: 8
+  require_rtl: true
+  must_pass_validation: true

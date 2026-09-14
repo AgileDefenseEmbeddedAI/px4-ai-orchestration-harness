@@ -44,7 +44,13 @@ async def dispatch_val(val: VAL) -> dict:
         "mission_id": val.mission_id,
         "status": "stub_dispatched",
         "action_count": len(val.actions),
+        "cmd_sequence": [action.action_type for action in val.actions],
     }
+
+
+def get_normalized_cmd_sequence(val: VAL) -> list[str]:
+    """Return the action-type sequence dispatched for parity testing."""
+    return [action.action_type for action in val.actions]
 
 
 def build_val_from_mig(mig: MIG, vehicle: Vehicle) -> VAL:

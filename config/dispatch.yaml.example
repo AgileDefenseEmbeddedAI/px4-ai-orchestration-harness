@@ -1,0 +1,10 @@
+# Dispatch transport configuration
+# Copy this file to config/dispatch.yaml and set 'transport'.
+# Switching transports requires only changing this file — no code changes.
+#
+# transport: ros2     — ROS 2 uXRCE-DDS bridge (primary)
+#                       Requires ROS 2 Humble + px4_msgs + px4_ros_com + DDS bridge
+# transport: mavlink  — MAVLink 2 / pymavlink (secondary)
+#                       Requires SITL UDP ports open (14540 multirotor, 14541 rover)
+
+transport: ros2
