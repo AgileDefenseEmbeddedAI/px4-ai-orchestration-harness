@@ -35,6 +35,11 @@ def log_event(mission_id: str, event_type: str, payload: Any) -> None:
         logger.error(f"[audit] Failed to write audit record for {mission_id}: {exc}")
 
 
+def has_authorization_event(mission_id: str) -> bool:
+    """Return True if an authorization_granted event exists for the mission."""
+    return any(r.get("event") == "authorization_granted" for r in read_log(mission_id))
+
+
 def read_log(mission_id: str) -> list[dict]:
     """Read all audit records for a mission, in insertion order."""
     path = _mission_file(mission_id)

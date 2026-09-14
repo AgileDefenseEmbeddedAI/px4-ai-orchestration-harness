@@ -111,10 +111,33 @@
 </div>
 {% endif %}
 
-<!-- Validation result -->
+{% if mig and mig.contingency_ladder %}
+<!-- Contingency ladder -->
+<div class="card" style="margin-bottom: 16px;">
+  <div class="card-title">Contingency Ladder</div>
+  <p style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 12px;">Autonomous fallback behaviors executed in priority order when a trigger condition is detected.</p>
+  <table class="table">
+    <thead>
+      <tr><th>Priority</th><th>Trigger</th><th>Action</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      {% for rung in mig.contingency_ladder %}
+      <tr>
+        <td style="font-size:13px; color: rgba(255,255,255,0.6);">{{ rung.priority }}</td>
+        <td class="mono" style="color: #efb16a;">{{ rung.trigger }}</td>
+        <td class="mono" style="color: #a9d8fb;">{{ rung.action }}</td>
+        <td style="font-size:12px; color: rgba(255,255,255,0.6);">{{ rung.description }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<!-- Validator verdict -->
 {% if m.validation_errors %}
 <div class="alert alert-error" style="margin-bottom: 16px;">
-  <div style="font-weight: 600; margin-bottom: 8px; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase;">Validation Failed — Mission Blocked</div>
+  <div style="font-weight: 600; margin-bottom: 8px; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase;">Validator Verdict: <span style="color: var(--red);">REJECT</span> — Mission Blocked</div>
   <ul style="list-style: none; padding: 0;">
     {% for err in m.validation_errors %}
     <li style="font-size: 13px; color: rgba(255,255,255,0.8); padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">{{ err }}</li>
@@ -123,7 +146,7 @@
 </div>
 {% elif m.status == 'pending_authorization' %}
 <div class="alert alert-success" style="margin-bottom: 16px;">
-  <div style="font-size: 13px; font-weight: 600; color: #4caf50;">VALID — All constraint checks passed. Awaiting human authorization.</div>
+  <div style="font-size: 13px; font-weight: 600; color: #4caf50;">Validator Verdict: ACCEPT — All constraint checks passed. Awaiting human authorization.</div>
 </div>
 {% endif %}
 
@@ -138,22 +161,29 @@
 </div>
 {% endif %}
 
-<!-- Authorization form (only shown when pending) -->
-{% if m.status == 'pending_authorization' %}
+<!-- Authorization form -->
+{% if m.status in ('pending_authorization', 'validation_failed') %}
 <div class="card">
   <div class="card-title">Operator Authorization</div>
+  {% if m.status == 'validation_failed' %}
+  <div style="margin-bottom: 16px; padding: 10px 14px; background: rgba(210,60,58,0.12); border-left: 3px solid var(--red);">
+    <span style="font-size: 13px; color: var(--red); font-weight: 600;">Authorization disabled — validator verdict is REJECT.</span>
+    <span style="font-size: 13px; color: rgba(255,255,255,0.6);"> Resolve the validation errors before this mission can be authorized.</span>
+  </div>
+  {% else %}
   <p style="font-size: 13px; color: rgba(255,255,255,0.65); margin-bottom: 20px; line-height: 1.5;">
-    By authorizing this mission, you confirm you have reviewed the plan, waypoints, and constraints.
+    By authorizing this mission, you confirm you have reviewed the plan, waypoints, contingency ladder, and constraints.
     Authorization is recorded in the immutable audit log with your identity and timestamp.
   </p>
+  {% endif %}
   <form id="auth-form">
     <div class="field">
       <label for="operator">Authorizing Operator (name / call sign)</label>
-      <input type="text" id="operator" name="operator" placeholder="Full name or call sign" required>
+      <input type="text" id="operator" name="operator" placeholder="Full name or call sign" {% if m.status == 'validation_failed' %}disabled{% else %}required{% endif %}>
     </div>
     <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-      <button type="submit" class="btn btn-red" id="auth-btn">Authorize Mission</button>
-      <button type="button" class="btn btn-outline" id="reject-btn">Reject Mission</button>
+      <button type="submit" class="btn btn-red" id="auth-btn" {% if m.status == 'validation_failed' %}disabled title="Verdict is REJECT — cannot authorize"{% endif %}>Authorize &amp; Dispatch</button>
+      <button type="button" class="btn btn-outline" id="reject-btn" {% if m.status == 'validation_failed' %}disabled{% endif %}>Reject Mission</button>
       <span id="auth-status" style="font-size: 13px; color: rgba(255,255,255,0.65);"></span>
     </div>
   </form>
@@ -195,10 +225,10 @@ async function doAuth(authorized) {
 
 document.getElementById('auth-form').addEventListener('submit', function(e) {
   e.preventDefault();
-  doAuth(true);
+  if (!document.getElementById('auth-btn').disabled) doAuth(true);
 });
 document.getElementById('reject-btn').addEventListener('click', function() {
-  doAuth(false);
+  if (!document.getElementById('reject-btn').disabled) doAuth(false);
 });
 </script>
 {% endif %}

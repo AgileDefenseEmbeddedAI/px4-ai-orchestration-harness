@@ -22,6 +22,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from harness.api.auth_router import auth_router
 from harness.api.routes import router as api_router
 
 logging.basicConfig(
@@ -114,6 +115,7 @@ app.add_middleware(
 
 # API routes
 app.include_router(api_router)
+app.include_router(auth_router)
 
 # ---------------------------------------------------------------------------
 # Static files (optional — directory may not exist in CI)
@@ -136,8 +138,9 @@ async def ui_missions(request: Request):
     """Mission list dashboard."""
     missions = list(request.app.state.missions.values())
     return templates.TemplateResponse(
+        request,
         "missions.html",
-        {"request": request, "missions": missions},
+        {"missions": missions},
     )
 
 
@@ -151,8 +154,9 @@ async def ui_authorize(mission_id: str, request: Request):
             status_code=404,
         )
     return templates.TemplateResponse(
+        request,
         "authorize.html",
-        {"request": request, "mission": missions[mission_id], "mission_id": mission_id},
+        {"mission": missions[mission_id], "mission_id": mission_id},
     )
 
 

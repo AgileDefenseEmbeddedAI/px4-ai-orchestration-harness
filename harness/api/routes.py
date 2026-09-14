@@ -4,18 +4,17 @@ FastAPI API router.
 Endpoints:
   POST /intent              — submit natural-language mission intent
   GET  /plan/{mission_id}   — retrieve current plan/status
-  POST /authorize/{mission_id} — human authorization gate
   GET  /missions            — list all missions (summary)
   GET  /audit/{mission_id}  — retrieve audit log entries
+
+Authorization endpoint (POST /authorize/{mission_id}) lives in auth_router.py.
 """
 
 import logging
-from datetime import datetime, timezone
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
 
 from harness.api.models import (
-    AuthorizeRequest,
     IntentRequest,
     MissionResponse,
     MissionStatus,
@@ -88,10 +87,19 @@ async def _dispatch_mission(
     missions: dict,
     vehicles_config: dict,
 ) -> None:
-    """Dispatch all vehicles in the MIG via both transports."""
+    """Dispatch all vehicles in the MIG via both transports.
+
+    Raises UnauthorizedDispatchError if no authorization_granted event exists
+    for the mission in the audit log — enforcing the dispatch gate invariant.
+    """
+    from harness.dispatch.gate import UnauthorizedDispatchError, require_authorization
     from harness.dispatch.mavlink_transport import dispatch_val as mavlink_dispatch
     from harness.dispatch.ros2_transport import build_val_from_mig
     from harness.dispatch.ros2_transport import dispatch_val as ros2_dispatch
+
+    # Authorization gate — must be checked before any vehicle command is issued.
+    # This runs before the try/except so UnauthorizedDispatchError propagates to callers.
+    require_authorization(mission_id)
 
     try:
         mission = missions[mission_id]
@@ -184,69 +192,6 @@ async def get_plan(mission_id: str, request: Request):
     if mission_id not in missions:
         raise HTTPException(status_code=404, detail=f"Mission '{mission_id}' not found")
     return missions[mission_id]
-
-
-@router.post("/authorize/{mission_id}", response_model=MissionResponse, summary="Authorize or reject mission")
-async def authorize_mission(
-    mission_id: str,
-    body: AuthorizeRequest,
-    request: Request,
-    background_tasks: BackgroundTasks,
-):
-    """
-    Human authorization gate.
-
-    The mission must be in pending_authorization state.
-    If authorized=True, sets status to authorized and starts dispatch.
-    If authorized=False, marks the mission as failed.
-    """
-    missions: dict = request.app.state.missions
-    if mission_id not in missions:
-        raise HTTPException(status_code=404, detail=f"Mission '{mission_id}' not found")
-
-    mission = missions[mission_id]
-
-    if mission.status == MissionStatus.planning:
-        raise HTTPException(status_code=409, detail="Mission is still being planned; try again shortly")
-
-    if mission.status == MissionStatus.validation_failed:
-        raise HTTPException(
-            status_code=409,
-            detail="Mission failed validation and cannot be authorized",
-        )
-
-    if mission.status not in (MissionStatus.pending_authorization,):
-        raise HTTPException(
-            status_code=409,
-            detail=f"Mission is not pending authorization (current status: {mission.status})",
-        )
-
-    if not body.authorized:
-        mission.status = MissionStatus.failed
-        audit_module.log_event(
-            mission_id, "authorization_rejected", {"operator": body.operator}
-        )
-        return mission
-
-    now = datetime.now(timezone.utc)
-    mission.status = MissionStatus.authorized
-    mission.authorized_at = now
-    mission.authorized_by = body.operator
-
-    audit_module.log_event(
-        mission_id,
-        "authorization_granted",
-        {"operator": body.operator, "authorized_at": now.isoformat()},
-    )
-
-    background_tasks.add_task(
-        _dispatch_mission,
-        mission_id,
-        missions,
-        request.app.state.vehicles_config,
-    )
-
-    return mission
 
 
 @router.get("/missions", summary="List all missions")
