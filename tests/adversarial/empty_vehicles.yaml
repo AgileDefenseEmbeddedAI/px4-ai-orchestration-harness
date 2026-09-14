@@ -1,0 +1,15 @@
+name: "No Vehicles Assigned"
+description: "Mission with no vehicles assigned — must be rejected"
+mig:
+  version: "1.0"
+  mission_id: "MSN-ADV005"
+  intent: "Autonomous survey with no vehicles"
+  vehicles: []
+  waypoints: []
+  constraints:
+    max_alt_m: 120.0
+    min_alt_m: 5.0
+    require_rtl: false
+    max_range_m: 5000.0
+expected_valid: false
+expected_error_contains: "vehicle"

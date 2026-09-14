@@ -1,13 +1,18 @@
-.PHONY: dev test install lint audit-scan check-config help
+.PHONY: dev test test-ci install lint license-scan validate-corpus schema-lint \
+        e2e-ros2 e2e-mavlink check-config help
 
 help:
 	@echo "PX4 AI Orchestration Harness — available targets:"
-	@echo "  install      Install Python dependencies"
-	@echo "  dev          Start FastAPI development server (port 8000)"
-	@echo "  test         Run pytest suite"
-	@echo "  lint         Syntax-check core Python modules"
-	@echo "  audit-scan   Run pip-licenses (fails on GPL/LGPL deps)"
-	@echo "  check-config Verify config/model.yaml exists"
+	@echo "  install          Install runtime Python dependencies"
+	@echo "  dev              Start FastAPI development server (port 8000)"
+	@echo "  test             Run full pytest suite"
+	@echo "  test-ci          Run pytest with fail-fast and short tracebacks (used in CI)"
+	@echo "  lint             Syntax-check core Python modules"
+	@echo "  license-scan     Fail build on any GPL/LGPL/AGPL dependency"
+	@echo "  validate-corpus  Assert corpus has >=8 entries; all must be rejected"
+	@echo "  schema-lint      Validate all schemas/ are valid JSON Schema Draft-07"
+	@echo "  e2e-ros2         Run ROS 2 transport mock tests"
+	@echo "  e2e-mavlink      Run MAVLink 2 transport mock tests"
 
 install:
 	pip install -r requirements.txt
@@ -28,6 +33,9 @@ check-config:
 test:
 	pytest tests/ -v --tb=short
 
+test-ci:
+	pytest tests/ -x --tb=short
+
 lint:
 	python -m py_compile \
 		harness/api/models.py \
@@ -41,5 +49,24 @@ lint:
 		harness/dispatch/mavlink_transport.py
 	@echo "Syntax check passed."
 
-audit-scan:
-	pip-licenses --format=markdown --fail-on="GPL;LGPL" || true
+license-scan:
+	pip-licenses --format=markdown --fail-on="GPL;LGPL;AGPL"
+
+validate-corpus:
+	@CORPUS_COUNT=$$(ls tests/adversarial/*.yaml 2>/dev/null | wc -l | tr -d ' '); \
+	echo "[validate-corpus] Found $$CORPUS_COUNT adversarial entries"; \
+	if [ "$$CORPUS_COUNT" -lt 8 ]; then \
+		echo "[validate-corpus] FAIL: need >= 8 adversarial entries, found $$CORPUS_COUNT"; \
+		exit 1; \
+	fi; \
+	echo "[validate-corpus] Count check PASS ($$CORPUS_COUNT >= 8)"
+	pytest tests/test_adversarial_corpus.py -v --tb=short
+
+schema-lint:
+	pytest tests/test_schema_lint.py -v --tb=short
+
+e2e-ros2:
+	pytest tests/test_transport_parity.py -v -k "ros2" --tb=short
+
+e2e-mavlink:
+	pytest tests/test_transport_parity.py -v -k "mavlink" --tb=short

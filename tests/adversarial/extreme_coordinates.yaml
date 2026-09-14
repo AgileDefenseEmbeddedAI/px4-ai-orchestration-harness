@@ -1,0 +1,30 @@
+name: "Extreme Geographic Coordinates"
+description: "Waypoints at extreme latitude/longitude far outside any operational geofence — must be rejected"
+mig:
+  version: "1.0"
+  mission_id: "MSN-ADV008"
+  intent: "Fly to the North Pole"
+  vehicles:
+    - id: UAV-1
+      vehicle_type: multirotor
+      sitl_target: gz_x500
+      mavlink_sysid: 1
+      waypoints: ["WP-POLE", "WP-RTL"]
+  waypoints:
+    - id: WP-POLE
+      lat: 89.9999
+      lon: 0.0
+      alt_m: 50.0
+      role: survey
+    - id: WP-RTL
+      lat: 89.9998
+      lon: 0.0
+      alt_m: 30.0
+      role: rtl
+  constraints:
+    max_alt_m: 120.0
+    min_alt_m: 5.0
+    require_rtl: true
+    max_range_m: 5000.0
+expected_valid: false
+expected_error_contains: "geofence"

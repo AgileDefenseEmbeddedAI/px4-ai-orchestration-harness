@@ -1,5 +1,7 @@
 # PX4 AI Orchestration Harness
 
+[![CI](https://github.com/AgileDefenseEmbeddedAI/px4-ai-orchestration-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/AgileDefenseEmbeddedAI/px4-ai-orchestration-harness/actions/workflows/ci.yml)
+
 AI harness that accepts natural-language mission intent, decomposes it into a validated
 multi-vehicle PX4 plan (multirotor + rover), enforces hard constraints deterministically,
 requires human authorization, and dispatches over ROS 2 / MAVLink 2 against SITL.
@@ -98,13 +100,18 @@ make dev
 
 ### Make targets
 
-| Target       | Description                                          |
-|--------------|------------------------------------------------------|
-| `make dev`   | Start FastAPI harness with auto-reload               |
-| `make test`  | Run pytest suite (scenarios + adversarial corpus)    |
-| `make install` | Install Python dependencies                        |
-| `make lint`  | Syntax-check core modules                            |
-| `make audit-scan` | Run pip-licenses (fails on GPL dependencies)   |
+| Target                  | Description                                                  |
+|-------------------------|--------------------------------------------------------------|
+| `make dev`              | Start FastAPI harness with auto-reload                       |
+| `make test`             | Run full pytest suite (verbose)                              |
+| `make test-ci`          | Run pytest with fail-fast (used in CI)                       |
+| `make install`          | Install runtime Python dependencies                          |
+| `make lint`             | Syntax-check core Python modules                             |
+| `make license-scan`     | Fail build on any GPL/LGPL/AGPL dependency (pip-licenses)    |
+| `make validate-corpus`  | Assert corpus has >=8 entries; all must be rejected          |
+| `make schema-lint`      | Validate all schemas/ as valid JSON Schema Draft-07          |
+| `make e2e-ros2`         | Run ROS 2 transport mock tests                               |
+| `make e2e-mavlink`      | Run MAVLink 2 transport mock tests                           |
 
 ---
 
