@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agiledefense.example/schemas/verdict/1.0",
+  "title": "Validator Verdict v1.0",
+  "description": "Structured result from the deterministic plan validator. Given the same plan artifact and pinned validator version, output is always identical.",
+  "type": "object",
+  "required": ["plan_id", "validator_version", "result", "violations"],
+  "additionalProperties": false,
+  "properties": {
+    "plan_id": {
+      "type": "string",
+      "description": "mission_id from the MIG being validated"
+    },
+    "validator_version": {
+      "type": "string",
+      "description": "Semver of the validator engine that produced this verdict"
+    },
+    "result": {
+      "type": "string",
+      "enum": ["accept", "reject"],
+      "description": "accept only when violations is empty"
+    },
+    "violations": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/Violation" },
+      "description": "Empty on accept; non-empty on reject"
+    }
+  },
+  "definitions": {
+    "Violation": {
+      "type": "object",
+      "required": ["constraint_id", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "constraint_id": {
+          "type": "string",
+          "description": "Stable identifier for the violated constraint rule (e.g. VIOL-GEOFENCE)"
+        },
+        "vehicle_id": {
+          "type": ["string", "null"],
+          "description": "ID of the vehicle involved, or null for mission-level constraints"
+        },
+        "waypoint_index": {
+          "type": ["integer", "null"],
+          "description": "Zero-based index of the offending waypoint in mig.waypoints, or null"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable explanation of the violation"
+        }
+      }
+    }
+  }
+}

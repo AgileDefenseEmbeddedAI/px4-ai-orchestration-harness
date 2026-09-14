@@ -1,0 +1,30 @@
+name: "Rover Non-Zero Altitude"
+description: "Rover waypoint with alt_m=50.0 — rovers must operate at ground level (0.0)"
+mig:
+  version: "1.0"
+  mission_id: "MSN-ADV005"
+  intent: "Rover flies to the target — invalid"
+  vehicles:
+    - id: GND-1
+      vehicle_type: rover
+      sitl_target: gz_rover_ackermann
+      mavlink_sysid: 1
+      waypoints: ["WP-1", "WP-RTL"]
+  waypoints:
+    - id: WP-1
+      lat: 35.1490
+      lon: -79.0100
+      alt_m: 50.0
+      role: survey
+    - id: WP-RTL
+      lat: 35.1400
+      lon: -79.0110
+      alt_m: 0.0
+      role: rtl
+  constraints:
+    max_alt_m: 120.0
+    min_alt_m: 5.0
+    require_rtl: true
+    max_range_m: 5000.0
+expected_valid: false
+expected_error_contains: "VIOL-ROVER-ALT"

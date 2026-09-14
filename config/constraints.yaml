@@ -1,38 +1,61 @@
-# Hard constraints for mission validation
-# The validator (harness/validator/constraint_checker.py) enforces these
+# Hard constraints for mission validation.
+# The validator engine (harness/validator/engine.py) enforces these
 # deterministically — the LLM is never consulted for constraint decisions.
 
+# ---------------------------------------------------------------------------
 # Geofence — Fort Bragg, NC training area polygon (approximate)
-# Format: [[lat, lon], ...]  — a closed polygon; closing vertex is implied
+# Format: [[lat, lon], ...]  — closing vertex implied
+# ---------------------------------------------------------------------------
 geofence_polygon:
   - [35.1200, -79.0500]
   - [35.1200, -78.9700]
   - [35.1700, -78.9700]
   - [35.1700, -79.0500]
 
-# Restricted airspace volumes (informational — future validator checks)
-airspace_volumes:
-  - name: "Restricted R-5313"
-    type: restricted
-    floor_m: 0
-    ceiling_m: 3048
-    polygon:
-      - [35.1300, -79.0200]
-      - [35.1300, -79.0000]
-      - [35.1500, -79.0000]
-      - [35.1500, -79.0200]
+# ---------------------------------------------------------------------------
+# Altitude limits (AGL, meters)
+# ---------------------------------------------------------------------------
+max_alt_m: 120.0   # Hard ceiling for all aerial vehicles (FAA/DoD limit)
+min_alt_m: 5.0     # Minimum safe AGL for multirotors
 
-# Altitude limits (AGL, meters) — hard FAA/DoD limits
-max_alt_m: 120.0        # Ceiling for all aerial vehicles
-min_alt_m: 5.0          # Minimum safe AGL for multirotors
-
+# ---------------------------------------------------------------------------
 # RTL requirement — every vehicle must have a return-to-launch waypoint
+# ---------------------------------------------------------------------------
 require_rtl: true
 
+# ---------------------------------------------------------------------------
 # Maximum allowed distance from home_base (meters)
+# ---------------------------------------------------------------------------
 max_range_m: 5000.0
 
 # Home base coordinates (origin for range checks)
 home_base:
   lat: 35.1400
   lon: -79.0110
+
+# ---------------------------------------------------------------------------
+# Restricted airspace volumes (3-D cylinders)
+# ---------------------------------------------------------------------------
+airspace_volumes:
+  - name: "Restricted R-5313"
+    type: cylinder
+    center_lat: 35.1300
+    center_lon: -79.0100
+    radius_m: 100.0
+    floor_m: 0.0
+    ceiling_m: 120.0
+
+# ---------------------------------------------------------------------------
+# Inter-vehicle deconfliction minimums
+# ---------------------------------------------------------------------------
+min_horizontal_sep_m: 50.0   # Minimum horizontal separation between any two vehicles
+min_vertical_sep_m: 10.0     # Minimum vertical separation between any two vehicles
+
+# ---------------------------------------------------------------------------
+# Class-specific hard limits
+# ---------------------------------------------------------------------------
+class_limits:
+  rover:
+    max_speed_ms: 5.0     # Maximum rover ground speed
+  multirotor:
+    max_alt_m: 120.0      # Same as global ceiling; kept here for class-level lookup

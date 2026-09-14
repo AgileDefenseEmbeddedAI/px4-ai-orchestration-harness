@@ -1,13 +1,14 @@
-.PHONY: dev test install lint audit-scan check-config help
+.PHONY: dev test install lint audit-scan check-config validate-corpus help
 
 help:
 	@echo "PX4 AI Orchestration Harness — available targets:"
-	@echo "  install      Install Python dependencies"
-	@echo "  dev          Start FastAPI development server (port 8000)"
-	@echo "  test         Run pytest suite"
-	@echo "  lint         Syntax-check core Python modules"
-	@echo "  audit-scan   Run pip-licenses (fails on GPL/LGPL deps)"
-	@echo "  check-config Verify config/model.yaml exists"
+	@echo "  install          Install Python dependencies"
+	@echo "  dev              Start FastAPI development server (port 8000)"
+	@echo "  test             Run pytest suite"
+	@echo "  lint             Syntax-check core Python modules"
+	@echo "  validate-corpus  Run all adversarial corpus entries; assert 100% rejection"
+	@echo "  audit-scan       Run pip-licenses (fails on GPL/LGPL deps)"
+	@echo "  check-config     Verify config/model.yaml exists"
 
 install:
 	pip install -r requirements.txt
@@ -36,10 +37,14 @@ lint:
 		harness/planner/mig.py \
 		harness/planner/decomposer.py \
 		harness/validator/constraint_checker.py \
+		harness/validator/engine.py \
 		harness/audit/logger.py \
 		harness/dispatch/ros2_transport.py \
 		harness/dispatch/mavlink_transport.py
 	@echo "Syntax check passed."
+
+validate-corpus:
+	python scripts/validate_corpus.py
 
 audit-scan:
 	pip-licenses --format=markdown --fail-on="GPL;LGPL" || true

@@ -1,0 +1,51 @@
+name: "Two-Vehicle Deconfliction Collision"
+description: >
+  Two multirotors occupy the same airspace within the minimum separation
+  distance at overlapping time windows — must be rejected
+mig:
+  version: "1.0"
+  mission_id: "MSN-ADV004"
+  intent: "Parallel survey with two UAVs"
+  vehicles:
+    - id: UAV-1
+      vehicle_type: multirotor
+      sitl_target: gz_x500
+      mavlink_sysid: 1
+      waypoints: ["WP-A1", "WP-RTL-1"]
+    - id: UAV-2
+      vehicle_type: multirotor
+      sitl_target: gz_x500
+      mavlink_sysid: 2
+      waypoints: ["WP-A2", "WP-RTL-2"]
+  waypoints:
+    - id: WP-A1
+      lat: 35.1490
+      lon: -79.0100
+      alt_m: 50.0
+      role: survey
+      t_s: 60.0
+    - id: WP-A2
+      lat: 35.1491
+      lon: -79.0101
+      alt_m: 51.0
+      role: survey
+      t_s: 60.0
+    - id: WP-RTL-1
+      lat: 35.1400
+      lon: -79.0110
+      alt_m: 30.0
+      role: rtl
+      t_s: 300.0
+    - id: WP-RTL-2
+      lat: 35.1400
+      lon: -79.0110
+      alt_m: 30.0
+      role: rtl
+      t_s: 300.0
+  constraints:
+    max_alt_m: 120.0
+    min_alt_m: 5.0
+    require_rtl: true
+    max_range_m: 5000.0
+expected_valid: false
+expected_error_contains: "VIOL-DECONFLICT"
